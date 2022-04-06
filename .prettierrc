@@ -1,0 +1,32 @@
+{
+	"overrides": [
+		{
+			"files": "*.ts",
+			"options": {
+				"parser": "typescript",
+				"tabWidth": 4,
+				"printWidth": 140,
+				"trailingComma": "all",
+				"bracketSpacing": true,
+				"jsxBracketSameLine": true,
+				"singleQuote": false
+			}
+		},
+		{
+			"files": "*.scss",
+			"options": {
+				"parser": "scss",
+				"printWidth": 140,
+				"tabWidth": 4
+			}
+		},
+		{
+			"files": "*.html",
+			"options": {
+				"parser": "html",
+				"printWidth": 140,
+				"tabWidth": 4
+			}
+		}
+	]
+}
