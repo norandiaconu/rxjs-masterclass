@@ -1,0 +1,45 @@
+#loading-overlay {
+    position: fixed;
+    top: 5%;
+    left: 5%;
+    width: 90%;
+    height: 90%;
+    z-index: 1;
+    background-color: purple;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.5s ease-out;
+    animation-duration: 500ms;
+    animation-fill-mode: both;
+    animation-name: fadeOutUp;
+
+    &.open {
+        animation-name: fadeInDown;
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translate3d(0, -100%, 0);
+    }
+
+    to {
+        opacity: 0.9;
+        transform: none;
+    }
+}
+
+@keyframes fadeOutUp {
+    from {
+        opacity: 0.9;
+    }
+
+    to {
+        opacity: 0;
+        transform: translate3d(0, -100%, 0);
+    }
+}
