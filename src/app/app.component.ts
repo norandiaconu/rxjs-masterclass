@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
-import { interval, Subject } from "rxjs";
-import { take, tap } from "rxjs/operators";
-import { loadingService } from "./loading.service";
+import { BehaviorSubject, interval, Subject } from "rxjs";
+import { share, take, tap } from "rxjs/operators";
+import { loadingBehaviorService, loadingService } from "./loading.service";
 
 @Component({
     selector: "app-root",
@@ -13,10 +13,11 @@ export class AppComponent {
     private readonly unsubscribe$ = new Subject();
 
     ngOnInit(): void {
-        this.interval();
-        this.loading2();
+        this.behaviorSubject();
+        this.loadingBehaviorSubject();
     }
 
+    // old way of displaying the interval, can be run with interval() button
     interval(): void {
         const observer = {
             next: (val: any) => console.log("next", val),
@@ -33,16 +34,45 @@ export class AppComponent {
         // new interval will only be printed once every two seconds
         const interval$ = interval(2000).pipe(
             take(5),
-            tap((value: number) => console.log("new interval", value))
+            tap((value: number) => console.log("new interval", value)),
         );
         interval$.subscribe(subject);
     }
 
-    // old way of displaying the loading overlay
+    // share observable for multiple subscriptions
+    multicastInterval(): void {
+        const observer = {
+            next: (val: any) => console.log("next", val),
+            error: (err: any) => console.log("error", err),
+            complete: () => console.log("complete"),
+        };
+        const interval$ = interval(2000).pipe(
+            take(5),
+            tap((value: number) => console.log("new interval", value)),
+        );
+        const multicastedInterval$ = interval$.pipe(share());
+        const subOne = multicastedInterval$.subscribe(observer);
+        const subTwo = multicastedInterval$.subscribe(observer);
+    }
+
+    behaviorSubject(): void {
+        const observer = {
+            next: (val: any) => console.log("next", val),
+            error: (err: any) => console.log("error", err),
+            complete: () => console.log("complete"),
+        };
+        const subject = new BehaviorSubject("Hello");
+        const subscription = subject.subscribe(observer);
+        const subscriptionTwo = subject.subscribe(observer);
+        subject.next("World");
+        setTimeout(() => subject.subscribe(observer), 3000);
+    }
+
+    // old way of displaying the loading overlay, can be run with loading() button
     loading(): void {
         const loadingOverlay = document.getElementById("loading-overlay");
         const loading$ = new Subject();
-        loading$.subscribe(isLoading => {
+        loading$.subscribe((isLoading) => {
             if (isLoading) {
                 loadingOverlay?.classList.add("open");
             } else {
@@ -54,9 +84,9 @@ export class AppComponent {
     }
 
     // better method of displaying the loading overlay where show/hide methods are called instead
-    loading2(): void {
+    loadingWithService(): void {
         const loadingOverlay = document.getElementById("loading-overlay");
-        loadingService.loadingStatus$.subscribe(isLoading => {
+        loadingService.loadingStatus$.subscribe((isLoading) => {
             if (isLoading) {
                 loadingOverlay?.classList.add("open");
             } else {
@@ -65,6 +95,18 @@ export class AppComponent {
         });
         loadingService.showLoading();
         setTimeout(() => loadingService.hideLoading(), 1000);
+    }
+
+    loadingBehaviorSubject(): void {
+        const loadingOverlay = document.getElementById("loading-overlay");
+        loadingBehaviorService.loadingBehaviorStatus$.subscribe((isLoading) => {
+            if (isLoading) {
+                loadingOverlay?.classList.add("open");
+            } else {
+                loadingOverlay?.classList.remove("open");
+            }
+        });
+        setTimeout(() => loadingBehaviorService.hideLoading(), 1000);
     }
 
     ngOnDestroy(): void {
