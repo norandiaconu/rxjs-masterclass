@@ -2,6 +2,7 @@ import { Component } from "@angular/core";
 import { BehaviorSubject, interval, Subject } from "rxjs";
 import { share, take, tap } from "rxjs/operators";
 import { loadingBehaviorService, loadingService } from "./loading.service";
+import { ObservableStoreComponent } from "./observable-store/observable-store.component";
 
 @Component({
     selector: "app-root",
@@ -107,6 +108,21 @@ export class AppComponent {
             }
         });
         setTimeout(() => loadingBehaviorService.hideLoading(), 1000);
+    }
+
+    useObservableStore() {
+        const store = new ObservableStoreComponent();
+        store.setup({
+            user: "Noran",
+            isAuthenticated: false,
+        });
+        store.selectState("user").subscribe(console.log);
+        store.updateState({
+            user: "Diaconu",
+        });
+        store.updateState({
+            isAuthenticated: true,
+        });
     }
 
     ngOnDestroy(): void {
