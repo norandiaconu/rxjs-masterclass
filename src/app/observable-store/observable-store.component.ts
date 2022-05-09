@@ -38,4 +38,10 @@ export class ObservableStoreComponent {
             pluck(stateKey)
         );
     }
+
+    completeState(): void {
+        this._store.complete();
+        this._stateUpdates.next();
+        this._stateUpdates.complete();
+    }
 }
