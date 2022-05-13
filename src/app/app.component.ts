@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { BehaviorSubject, interval, ReplaySubject, Subject } from "rxjs";
-import { mergeMapTo, share, shareReplay, take, tap } from "rxjs/operators";
+import { asapScheduler, asyncScheduler, AsyncSubject, BehaviorSubject, interval, of, range, ReplaySubject, Subject } from "rxjs";
+import { mergeMapTo, observeOn, share, shareReplay, subscribeOn, take, tap } from "rxjs/operators";
 import { loadingBehaviorService, loadingService } from "./loading.service";
 import { ObservableStoreComponent } from "./observable-store/observable-store.component";
 
@@ -13,6 +13,8 @@ import { ObservableStoreComponent } from "./observable-store/observable-store.co
 export class AppComponent {
     title = "rxjs-masterclass";
     private readonly unsubscribe$ = new Subject();
+    asapCounter = 0;
+    asyncCounter = 0;
 
     observer = {
         next: (val: any) => console.log("next", val),
@@ -23,9 +25,10 @@ export class AppComponent {
     constructor(private httpClient: HttpClient) {}
 
     ngOnInit(): void {
-        this.behaviorSubject();
         this.loadingBehaviorSubject();
     }
+
+    /* Subjects and multicasting */
 
     // old way of displaying the interval, can be run with interval() button
     interval(): void {
@@ -150,15 +153,76 @@ export class AppComponent {
     // shareReplay allows the get request to only occur once and the result is passed to each subscription
     useShareReplay(): void {
         const httpCall = this.httpClient.get("https://api.github.com/users/octocat");
-        const request$ = httpCall.pipe(
-            mergeMapTo(httpCall),
-            shareReplay(1)
-        );
+        const request$ = httpCall.pipe(mergeMapTo(httpCall), shareReplay(1));
         request$.subscribe(this.observer);
         setTimeout(() => {
             console.log("subscribing");
             request$.subscribe(this.observer);
         }, 3000);
+    }
+
+    // displays output only upon complete instead of on subscribe
+    useAsyncSubject(): void {
+        const subject = new AsyncSubject<string>();
+        subject.subscribe(this.observer);
+        subject.subscribe(this.observer);
+        subject.next("Hello");
+        subject.next("World");
+        subject.next("Goodbye");
+        subject.complete();
+    }
+
+    /* Schedulers */
+
+    // used instead of setTimeout to postpone execution, but delay() is preferred as errors are thrown right away
+    useAsyncScheduler(): void {
+        asyncScheduler.schedule(console.log, 3000, "Hello world");
+        of(7, 8, 9)
+            .pipe(
+                tap((val) => console.log("tap789", val)),
+                subscribeOn(asyncScheduler, 2000),
+            )
+            .subscribe(this.observer);
+        of(4, 5, 6)
+            .pipe(
+                tap((val) => console.log("tap456", val)),
+                observeOn(asyncScheduler, 1000),
+            )
+            .subscribe(this.observer);
+        of(1, 2, 3).subscribe(this.observer);
+        console.log("sync");
+    }
+
+    // compare display timing of asapScheduler compared to other methods
+    useAsapScheduler(): void {
+        asyncScheduler.schedule(() => {
+            console.log("asyncScheduler");
+        });
+        asapScheduler.schedule(() => {
+            console.log("asapScheduler");
+        });
+        queueMicrotask(() => console.log("microtask"));
+        Promise.resolve("promise").then(console.log);
+        range(1, 5).subscribe(this.observer);
+        console.log("sync");
+    }
+
+    // increments a counter using asyncScheduler
+    useAsyncSchedulerCounter(): void {
+        range(1, 5, asapScheduler).subscribe(this.observer);
+        range(1, 500, asyncScheduler)
+            .pipe(tap((val) => (this.asyncCounter = val)))
+            .subscribe();
+        console.log("sync");
+    }
+
+    // increments a counter using asapScheduler
+    useAsapSchedulerCounter(): void {
+        range(1, 5, asapScheduler).subscribe(this.observer);
+        range(1, 1000000, asapScheduler)
+            .pipe(tap((val) => (this.asapCounter = val)))
+            .subscribe();
+        console.log("sync");
     }
 
     ngOnDestroy(): void {
