@@ -1,7 +1,19 @@
 import { Component } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { asapScheduler, asyncScheduler, AsyncSubject, BehaviorSubject, interval, of, range, ReplaySubject, Subject } from "rxjs";
-import { mergeMapTo, observeOn, share, shareReplay, subscribeOn, take, tap } from "rxjs/operators";
+import {
+    animationFrameScheduler,
+    asapScheduler,
+    asyncScheduler,
+    AsyncSubject,
+    BehaviorSubject,
+    interval,
+    of,
+    queueScheduler,
+    range,
+    ReplaySubject,
+    Subject,
+} from "rxjs";
+import { mergeMapTo, observeOn, share, shareReplay, subscribeOn, take, takeWhile, tap } from "rxjs/operators";
 import { loadingBehaviorService, loadingService } from "./loading.service";
 import { ObservableStoreComponent } from "./observable-store/observable-store.component";
 
@@ -15,6 +27,7 @@ export class AppComponent {
     private readonly unsubscribe$ = new Subject();
     asapCounter = 0;
     asyncCounter = 0;
+    position = -270;
 
     observer = {
         next: (val: any) => console.log("next", val),
@@ -222,6 +235,28 @@ export class AppComponent {
         range(1, 1000000, asapScheduler)
             .pipe(tap((val) => (this.asapCounter = val)))
             .subscribe();
+        console.log("sync");
+    }
+
+    // uses interval and animationFrameScheduler to translate circle
+    useAnimationFrameScheduler(): void {
+        interval(0, animationFrameScheduler)
+            .pipe(
+                takeWhile((val) => val <= 350),
+                tap((val) => (this.position = val - 270)),
+            )
+            .subscribe();
+    }
+
+    // use multiple queueScheduler calls to show execution order
+    useQueueScheduler(): void {
+        queueScheduler.schedule(() => {
+            queueScheduler.schedule(() => {
+                queueScheduler.schedule(() => console.log("inner queue"));
+                console.log("middle queue");
+            });
+            console.log("outer queue");
+        });
         console.log("sync");
     }
 

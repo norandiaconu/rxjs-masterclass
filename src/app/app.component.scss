@@ -44,9 +44,15 @@
     }
 }
 
+#ball {
+    height: 70px;
+    width: 70px;
+    background-color: red;
+    border-radius: 50%;
+}
+
 :host {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji",
-        "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: "Segoe UI";
     font-size: 14px;
     color: #333;
     box-sizing: border-box;
@@ -55,16 +61,8 @@
 }
 
 h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h2 {
     margin: 8px 0;
-}
-
-p {
-    margin: 0;
 }
 
 .spacer {
@@ -110,19 +108,6 @@ p {
     max-width: 960px;
     flex-direction: column;
     align-items: center;
-}
-
-svg.material-icons {
-    height: 24px;
-    width: auto;
-}
-
-svg.material-icons:not(:last-child) {
-    margin-right: 8px;
-}
-
-.card svg.material-icons path {
-    fill: #888;
 }
 
 .card-container {
@@ -213,26 +198,6 @@ a:hover {
 
 a:hover {
     color: #125699;
-}
-
-.circle-link {
-    height: 40px;
-    width: 40px;
-    border-radius: 40px;
-    margin: 8px;
-    background-color: white;
-    border: 1px solid #eeeeee;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-    transition: 1s ease-out;
-}
-
-.circle-link:hover {
-    transform: translateY(-0.25rem);
-    box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.2);
 }
 
 svg#clouds {
