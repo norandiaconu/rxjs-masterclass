@@ -10,11 +10,16 @@ function createWindow() {
         webPreferences: {
             // preload: path.join(__dirname, "preload.ts"),
         },
-        autoHideMenuBar: true
+        autoHideMenuBar: true,
+        show: false
     });
 
     // and load the index.html of the app.
     mainWindow.loadFile("docs/index.html");
+    mainWindow.on("ready-to-show", function() {
+        mainWindow.show();
+        mainWindow.focus();
+    })
 
     // Open the DevTools.
     // mainWindow.webContents.openDevTools()

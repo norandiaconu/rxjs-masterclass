@@ -31,7 +31,7 @@
     "@angular/compiler-cli": "~12.2.0",
     "@types/jest": "^26.0.24",
     "@types/node": "^14.18.21",
-    "electron": "^19.0.6",
+    "electron": "^20.0.0-beta.2",
     "electron-builder": "^23.1.0",
     "jest": "^27.5.1",
     "jest-preset-angular": "^10.1.0",

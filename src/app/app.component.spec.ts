@@ -1,4 +1,4 @@
-import { concat, map } from "rxjs/operators";
+import { concat, map, take } from "rxjs/operators";
 import { TestScheduler } from "rxjs/testing";
 
 describe("Marble testing in RxJS", () => {
@@ -27,7 +27,7 @@ describe("Marble testing in RxJS", () => {
             const expected =     "--a-b---c";
             expectObservable(final$).toBe(expected, { a: 10, b: 20, c: 30});
         });
-    })
+    });
     
     it("should let you identify subscription points", () => {
         testScheduler.run(helpers => {
@@ -42,5 +42,15 @@ describe("Marble testing in RxJS", () => {
             expectSubscriptions(source$.subscriptions).toBe(sourceOneExpectedSub);
             expectSubscriptions(source2$.subscriptions).toBe(sourceTwoExpectedSub);
         });
-    })
+    });
+
+    it("should let you test hot observables", () => {
+        testScheduler.run(helpers => {
+            const { hot, expectObservable } = helpers;
+            const source$ = hot("--a-b-^-c");
+            const final$ = source$.pipe(take(1));
+            const expected =     "--(c|)";
+            expectObservable(final$).toBe(expected);
+        });
+    });
 })
