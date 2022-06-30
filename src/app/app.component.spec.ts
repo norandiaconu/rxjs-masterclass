@@ -1,5 +1,5 @@
-import { from } from "rxjs";
-import { concat, map, take } from "rxjs/operators";
+import { concat, from } from "rxjs";
+import { delay, map, take } from "rxjs/operators";
 import { TestScheduler } from "rxjs/testing";
 
 describe("Marble testing in RxJS", () => {
@@ -35,7 +35,7 @@ describe("Marble testing in RxJS", () => {
             const { cold, expectObservable, expectSubscriptions } = helpers;
             const source$ =            cold("-a---b-|");
             const source2$ =           cold("-c---d-|");
-            const final$ = source$.pipe(concat(source2$));
+            const final$ = concat(source$, source2$);
             const expected =                "-a---b--c---d-|";
             const sourceOneExpectedSub =    "^------!";
             const sourceTwoExpectedSub =    "-------^------!";
@@ -61,6 +61,16 @@ describe("Marble testing in RxJS", () => {
             const source$ = from([1,2,3,4,5]);
             const expected = "(abcde|)";
             expectObservable(source$).toBe(expected, { a: 1, b: 2, c: 3, d: 4, e: 5});
+        })
+    });
+
+    it("should let you test asynchronous operations", () => {
+        testScheduler.run(helpers => {
+            const { expectObservable } = helpers;
+            const source$ = from([1,2,3,4,5]);
+            const final$ = source$.pipe(delay(200));
+            const expected = "200ms (abcde|)";
+            expectObservable(final$).toBe(expected, { a: 1, b: 2, c: 3, d: 4, e: 5});
         })
     });
 })
