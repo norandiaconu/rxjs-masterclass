@@ -1,0 +1,9 @@
+<div id="typeahead">
+    <input #textInput>
+    <br/>
+    <div id="entryRows">
+        <div *ngFor="let row of rows">
+            {{ row.name }}
+        </div>
+    </div>
+</div>

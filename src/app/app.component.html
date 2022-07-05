@@ -7,6 +7,11 @@
     />
     <span>Welcome</span>
     <div class="spacer"></div>
+    <div class="card-container">
+        <a class="card" (click)="toggleShow()" *ngIf="show">Show typeahead</a>
+        <a class="card" (click)="toggleShow()" *ngIf="!show">Show subjects & schedulers</a>
+    </div>
+    <div class="spacer"></div>
     <a aria-label="Angular on twitter" target="_blank" rel="noopener" href="https://twitter.com/angular" title="Twitter">
         <svg id="twitter-logo" height="24" data-name="Logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
             <rect width="400" height="400" fill="none" />
@@ -30,7 +35,7 @@
     <h1>Loading</h1>
 </div>
 
-<div class="content" role="main">
+<div class="content" role="main" *ngIf="show">
     <!-- Highlight Card -->
     <div class="card highlight-card card-small">
         <svg id="rocket" xmlns="http://www.w3.org/2000/svg" width="101.678" height="101.678" viewBox="0 0 101.678 101.678">
@@ -94,6 +99,9 @@
         </a>
         <a class="card card__scheduler" (click)="useQueueScheduler()">useQueueScheduler</a>
     </div>
+</div>
+<div class="content" *ngIf="!show">
+    <typeahead></typeahead>
 </div>
 
 <router-outlet></router-outlet>

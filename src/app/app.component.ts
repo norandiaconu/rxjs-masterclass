@@ -28,6 +28,7 @@ export class AppComponent {
     asapCounter = 0;
     asyncCounter = 0;
     position = -270;
+    show = true;
 
     observer = {
         next: (val: any) => console.log("next", val),
@@ -258,6 +259,10 @@ export class AppComponent {
             console.log("outer queue");
         });
         console.log("sync");
+    }
+
+    toggleShow(): void {
+        this.show = !this.show;
     }
 
     ngOnDestroy(): void {

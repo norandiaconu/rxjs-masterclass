@@ -40,7 +40,7 @@
 
     to {
         opacity: 0;
-        transform: translate3d(0, -100%, 0);
+        transform: translate3d(0, -110%, 0);
     }
 }
 
@@ -81,6 +81,16 @@ h2 {
     color: white;
     font-weight: 600;
     -webkit-app-region: drag;
+
+    .card-container {
+        margin: 0;
+    }
+    
+    .card {
+        height: 40px;
+        margin: 0;
+        padding: 0;
+    }
 }
 
 .toolbar img {
