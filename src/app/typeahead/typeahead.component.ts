@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from "@angular/core";
-import { fromEvent } from "rxjs";
+import { fromEvent, Observable } from "rxjs";
 import { debounceTime, distinctUntilChanged, pluck, switchMap } from "rxjs/operators";
+import { HttpClient } from "@angular/common/http";
 
 interface Entry {
     name: string;
@@ -13,11 +14,15 @@ interface Entry {
 })
 export class TypeaheadComponent implements AfterViewInit {
     @ViewChild("textInput") inputBox!: ElementRef;
-    rows: Entry[];
+    rows: Observable<Entry[]>;
 
-    constructor() {}
+    constructor(private http: HttpClient) {}
 
     ngAfterViewInit(): void {
+        this.search();
+    }
+
+    search(): Entry[] {
         const input$ = fromEvent(this.inputBox.nativeElement, "input");
         input$
             .pipe(
@@ -25,26 +30,17 @@ export class TypeaheadComponent implements AfterViewInit {
                 pluck("target", "value"),
                 distinctUntilChanged(),
                 switchMap(searchTerm => {
-                    return this.getUrl("https://api.openbrewerydb.org/breweries?by_name=" + searchTerm);
+                    this.rows = this.http.get<Entry[]>("https://api.openbrewerydb.org/breweries?by_name=" + searchTerm);
+                    return this.rows;
                 }),
             )
             .subscribe((response) => {
-                this.rows = response;
+                return response;
             });
-    }
-
-    async getUrl(url: string): Promise<Entry[]> {
-        const response = await fetch(url, {
-            method: "GET",
-        });
-        if (response.status === 200) {
-            return response.json();
-        } else {
-            return [
-                {
-                    name: "",
-                },
-            ];
-        }
+        return [
+            {
+                name: "No response",
+            },
+        ];
     }
 }

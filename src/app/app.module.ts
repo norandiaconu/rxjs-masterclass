@@ -1,4 +1,4 @@
-import { HttpClientModule } from "@angular/common/http";
+import { HttpClient, HttpClientModule } from "@angular/common/http";
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 
@@ -9,7 +9,7 @@ import { TypeaheadComponent } from './typeahead/typeahead.component';
 @NgModule({
     declarations: [AppComponent, TypeaheadComponent],
     imports: [BrowserModule, AppRoutingModule, HttpClientModule],
-    providers: [],
+    providers: [HttpClient, HttpClientModule],
     bootstrap: [AppComponent],
 })
 export class AppModule {}
