@@ -1,5 +1,5 @@
-import { concat, from } from "rxjs";
-import { delay, map, take } from "rxjs/operators";
+import { concat, from, of } from "rxjs";
+import { catchError, delay, map, take } from "rxjs/operators";
 import { TestScheduler } from "rxjs/testing";
 
 describe("Marble testing in RxJS", () => {
@@ -72,5 +72,20 @@ describe("Marble testing in RxJS", () => {
             const expected = "200ms (abcde|)";
             expectObservable(final$).toBe(expected, { a: 1, b: 2, c: 3, d: 4, e: 5});
         })
+    });
+
+    it("should let you test errors and error messages", () => {
+        let errorTestScheduler = new TestScheduler(() => {});
+        errorTestScheduler.run(helpers => {
+            const { expectObservable } = helpers;
+            const source$ = of({ firstName: "Noran", lastName: "Diaconu" }, null).pipe(
+                map(output => `${output?.firstName} ${output?.lastName}`),
+                catchError(() => {
+                    throw { message: "Invalid user!" };
+                })
+            );
+            const expected = "(a#)";
+            expectObservable(source$).toBe(expected, { a: "Noran Diaconu" }, { message: "Invalid user!" });
+        });
     });
 })
