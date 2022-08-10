@@ -6,7 +6,7 @@
     "start": "ng serve --port 4201 --ssl",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "jest --coverage",
+    "test": "jest",
     "electron": "electron .",
     "electron-build": "electron-builder --win portable",
     "full": "npm run test && npm run build && npm run electron-build"
@@ -23,7 +23,7 @@
     "@angular/router": "~12.2.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.4.0",
-    "zone.js": "^0.11.6"
+    "zone.js": "^0.11.7"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~12.2.6",
@@ -31,7 +31,7 @@
     "@angular/compiler-cli": "~12.2.0",
     "@types/jest": "^26.0.24",
     "@types/node": "^14.18.21",
-    "electron": "^20.0.0",
+    "electron": "^20.0.1",
     "electron-builder": "^23.3.3",
     "jest": "^27.5.1",
     "jest-preset-angular": "^10.1.0",

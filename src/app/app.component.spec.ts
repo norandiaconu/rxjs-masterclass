@@ -1,4 +1,4 @@
-import { concat, from, of } from "rxjs";
+import { concat, from, interval, of } from "rxjs";
 import { catchError, delay, map, take } from "rxjs/operators";
 import { TestScheduler } from "rxjs/testing";
 
@@ -86,6 +86,22 @@ describe("Marble testing in RxJS", () => {
             );
             const expected = "(a#)";
             expectObservable(source$).toBe(expected, { a: "Noran Diaconu" }, { message: "Invalid user!" });
+        });
+    });
+
+    it("should let you test snapshots of streams that do not complete", () => {
+        testScheduler.run(helpers => {
+            const { expectObservable } = helpers;
+            const source$ = interval(1000).pipe(
+                map(val => `${val + 1}sec`)
+            );
+            const expected = "1s a 999ms b 999ms c";
+            const unsubscribe = "4s !";
+            expectObservable(source$, unsubscribe).toBe(expected, {
+                a: "1sec",
+                b: "2sec",
+                c: "3sec"
+            });
         });
     });
 })
