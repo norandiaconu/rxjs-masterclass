@@ -104,4 +104,19 @@ describe("Marble testing in RxJS", () => {
             });
         });
     });
-})
+});
+
+describe("subscribe & assert testing in RxJs", () => {
+    it("should compare each emitted value", () => {
+        const source$ = of(1, 2, 3);
+        const final$ = source$.pipe(
+            map(val => val *10)
+        );
+        const expected = [10, 20, 30];
+        let index = 0;
+        final$.subscribe(val => {
+            expect(val).toEqual(expected[index]);
+            index++;
+        });
+    });
+});
