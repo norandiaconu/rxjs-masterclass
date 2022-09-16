@@ -1,15 +1,152 @@
+import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { concat, from, interval, of } from "rxjs";
 import { catchError, delay, map, take } from "rxjs/operators";
 import { TestScheduler } from "rxjs/testing";
+import { AppComponent } from "./app.component";
 
 describe("Marble testing in RxJS", () => {
     let testScheduler: TestScheduler;
+    let fixture: ComponentFixture<AppComponent>;
+    let app: AppComponent;
 
     beforeEach(() => {
         testScheduler = new TestScheduler((actual, expected) => {
             expect(actual).toEqual(expected);
         });
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule]
+        });
+
+        fixture = TestBed.createComponent(AppComponent);
+        app = fixture.componentInstance;
     });
+
+    it("should setup app", () => {
+        expect(app).toBeTruthy();
+    });
+
+    it("should interval", () => {
+        const sub = app.interval();
+        sub.unsubscribe();
+        expect(sub.closed).toBeTruthy();
+    });
+
+    it("should multicastInterval", () => {
+        const subs = app.multicastInterval();
+        subs.forEach(sub => {
+            sub.unsubscribe();
+            expect(sub.closed).toBeTruthy();
+        });
+    });
+
+    it("should behaviorSubject", () => {
+        jest.useFakeTimers();
+        const subs = app.behaviorSubject();
+        jest.runAllTimers();
+        subs.forEach(sub => {
+            sub.unsubscribe();
+            expect(sub.closed).toBeTruthy();
+        });
+    });
+
+    it("should loading", () => {
+        jest.useFakeTimers();
+        const sub = app.loading();
+        jest.runAllTimers();
+        sub.unsubscribe();
+        expect(sub.closed).toBeTruthy();
+    });
+
+    it("should loadingWithService", () => {
+        jest.useFakeTimers();
+        const sub = app.loadingWithService();
+        jest.runAllTimers();
+        sub.unsubscribe();
+        expect(sub.closed).toBeTruthy();
+    });
+
+    it("should ngOnInit/loadingBehaviorSubject", () => {
+        jest.useFakeTimers();
+        app.ngOnInit();
+        const sub = app.loadingWithService();
+        jest.runAllTimers();
+        sub.unsubscribe();
+        expect(sub.closed).toBeTruthy();
+    });
+
+    it("should useObservableStore", () => {
+        const store = app.useObservableStore();
+        expect(store._store.value).toStrictEqual({"isAuthenticated": true, "user": "Diaconu"});
+    });
+    
+    it("should useReplaySubject", () => {
+        const sub = app.useReplaySubject();
+        sub.unsubscribe();
+        expect(sub.closed).toBeTruthy();
+    });
+    
+    it("should useShareReplay", () => {
+        jest.useFakeTimers();
+        const sub = app.useShareReplay();
+        jest.runAllTimers();
+        expect(sub).toBeTruthy();
+    });
+
+    it("should useAsyncSubject", () => {
+        const sub = app.useAsyncSubject();
+        sub.unsubscribe();
+        expect(sub.closed).toBeTruthy();
+    });
+
+    it("should useAsyncScheduler", () => {
+        const subs = app.useAsyncScheduler();
+        subs.forEach(sub => {
+            sub.unsubscribe();
+            expect(sub.closed).toBeTruthy();
+        });
+    });
+
+    it("should useAsapScheduler", () => {
+        const sub = app.useAsapScheduler();
+        sub.unsubscribe();
+        expect(sub.closed).toBeTruthy();
+    });
+
+    it("should useAsyncSchedulerCounter", () => {
+        const subs = app.useAsyncSchedulerCounter();
+        subs.forEach(sub => {
+            sub.unsubscribe();
+            expect(sub.closed).toBeTruthy();
+        });
+    });
+
+    it("should useAsapSchedulerCounter", () => {
+        const subs = app.useAsapSchedulerCounter();
+        subs.forEach(sub => {
+            sub.unsubscribe();
+            expect(sub.closed).toBeTruthy();
+        });
+    });
+
+    it("should useAnimationFrameScheduler", () => {
+        const sub = app.useAnimationFrameScheduler();
+        sub.unsubscribe();
+        expect(sub.closed).toBeTruthy();
+    });
+
+    it("should useQueueScheduler", () => {
+        const sub = app.useQueueScheduler();
+        sub.unsubscribe();
+        expect(sub.closed).toBeTruthy();
+    });
+
+    it("should toggleShow", () => {
+        app.show = false;
+        app.toggleShow();
+        expect(app.show).toBeTruthy();
+    });
+
 
     it("should convert ASCII diagrams into observables", () => {
         testScheduler.run(helpers => {
