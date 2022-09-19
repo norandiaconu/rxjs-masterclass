@@ -15,7 +15,7 @@ import {
     Subject,
     Subscription,
 } from "rxjs";
-import { mergeMapTo, observeOn, share, shareReplay, subscribeOn, take, takeWhile, tap } from "rxjs/operators";
+import { finalize, mergeMapTo, observeOn, share, shareReplay, subscribeOn, take, takeWhile, tap } from "rxjs/operators";
 import { loadingBehaviorService, loadingService } from "./loading.service";
 import { ObservableStoreComponent } from "./observable-store/observable-store.component";
 
@@ -25,12 +25,13 @@ import { ObservableStoreComponent } from "./observable-store/observable-store.co
     styleUrls: ["./app.component.scss"],
 })
 export class AppComponent {
-    title = "rxjs-masterclass";
     private readonly unsubscribe$ = new Subject();
     asapCounter = 0;
     asyncCounter = 0;
     position = -270;
     show = true;
+    counter = "";
+    counterFinalize = "";
 
     observer = {
         next: (val: any) => console.log("next", val),
@@ -279,6 +280,34 @@ export class AppComponent {
 
     toggleShow(): void {
         this.show = !this.show;
+    }
+
+    count(): void {
+        this.counter = "";
+        const sub = interval(1000).pipe(
+            take(3)
+        ).subscribe({
+            next: val => {
+                this.counter = val.toString();
+            },
+            complete: () => {
+                this.counter = "Stopped!";
+            }
+        });
+    }
+
+    countFinalize(): void {
+        this.counterFinalize = "";
+        const sub = interval(1000).pipe(
+            finalize(() => {
+                this.counterFinalize = "Stopped!";
+            })
+        ).subscribe(val => {
+            this.counterFinalize = val.toString();
+        });
+        setTimeout(() => {
+            sub.unsubscribe();
+        }, 3000);
     }
 
     ngOnDestroy(): void {

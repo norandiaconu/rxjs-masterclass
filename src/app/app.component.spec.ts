@@ -1,19 +1,17 @@
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { concat, from, interval, of } from "rxjs";
-import { catchError, delay, map, take } from "rxjs/operators";
+import { concat, from, interval, of, Subject } from "rxjs";
+import { catchError, delay, map, mergeMap, take, toArray } from "rxjs/operators";
 import { TestScheduler } from "rxjs/testing";
 import { AppComponent } from "./app.component";
+import { loadingBehaviorService } from "./loading.service";
 
 describe("Marble testing in RxJS", () => {
-    let testScheduler: TestScheduler;
     let fixture: ComponentFixture<AppComponent>;
     let app: AppComponent;
+    jest.useFakeTimers();
 
     beforeEach(() => {
-        testScheduler = new TestScheduler((actual, expected) => {
-            expect(actual).toEqual(expected);
-        });
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule]
         });
@@ -32,6 +30,14 @@ describe("Marble testing in RxJS", () => {
         expect(sub.closed).toBeTruthy();
     });
 
+    it("should observer error", () => {
+        const subject = new Subject();
+        const sub = subject.subscribe(app.observer);
+        subject.error("Hello");
+        sub.unsubscribe();
+        expect(sub.closed).toBeTruthy();
+    });
+
     it("should multicastInterval", () => {
         const subs = app.multicastInterval();
         subs.forEach(sub => {
@@ -41,7 +47,6 @@ describe("Marble testing in RxJS", () => {
     });
 
     it("should behaviorSubject", () => {
-        jest.useFakeTimers();
         const subs = app.behaviorSubject();
         jest.runAllTimers();
         subs.forEach(sub => {
@@ -51,7 +56,6 @@ describe("Marble testing in RxJS", () => {
     });
 
     it("should loading", () => {
-        jest.useFakeTimers();
         const sub = app.loading();
         jest.runAllTimers();
         sub.unsubscribe();
@@ -59,7 +63,6 @@ describe("Marble testing in RxJS", () => {
     });
 
     it("should loadingWithService", () => {
-        jest.useFakeTimers();
         const sub = app.loadingWithService();
         jest.runAllTimers();
         sub.unsubscribe();
@@ -67,10 +70,18 @@ describe("Marble testing in RxJS", () => {
     });
 
     it("should ngOnInit/loadingBehaviorSubject", () => {
-        jest.useFakeTimers();
         app.ngOnInit();
-        const sub = app.loadingWithService();
+        const sub = app.loadingBehaviorSubject();
         jest.runAllTimers();
+        sub.unsubscribe();
+        expect(sub.closed).toBeTruthy();
+    });
+
+    it("should ngOnInit/loadingBehaviorSubject and showLoading", () => {
+        app.ngOnInit();
+        const sub = app.loadingBehaviorSubject();
+        jest.runAllTimers();
+        loadingBehaviorService.showLoading();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
@@ -87,7 +98,6 @@ describe("Marble testing in RxJS", () => {
     });
     
     it("should useShareReplay", () => {
-        jest.useFakeTimers();
         const sub = app.useShareReplay();
         jest.runAllTimers();
         expect(sub).toBeTruthy();
@@ -147,6 +157,27 @@ describe("Marble testing in RxJS", () => {
         expect(app.show).toBeTruthy();
     });
 
+    it("should count", () => {
+        app.count();
+        jest.runAllTimers();
+        expect(app.counter).toBe("Stopped!");
+    });
+
+    it("should countFinalize", () => {
+        app.countFinalize();
+        jest.runAllTimers();
+        expect(app.counterFinalize).toBe("Stopped!");
+    });
+});
+
+describe("Marble testing in RxJS", () => {
+    let testScheduler: TestScheduler;
+
+    beforeEach(() => {
+        testScheduler = new TestScheduler((actual, expected) => {
+            expect(actual).toEqual(expected);
+        });
+    });
 
     it("should convert ASCII diagrams into observables", () => {
         testScheduler.run(helpers => {
@@ -226,6 +257,26 @@ describe("Marble testing in RxJS", () => {
         });
     });
 
+    it("should let you test errors and error messages with subscribe", () => {
+        const source$ = of({ firstName: "Noran", lastName: "Diaconu" }, null).pipe(
+            map(output => `${output?.firstName} ${output?.lastName}`),
+            catchError(() => {
+                throw { message: "Invalid user!" };
+            })
+        );
+        const expected = ["Noran Diaconu", "Invalid user!"];
+        let actual: string[] = [];
+        source$.subscribe({
+            next: value => {
+                actual.push(value);
+            },
+            error: error => {
+                actual.push(error);
+                expect(actual).toEqual(expected);
+            }
+        });
+    });
+
     it("should let you test snapshots of streams that do not complete", () => {
         testScheduler.run(helpers => {
             const { expectObservable } = helpers;
@@ -255,5 +306,29 @@ describe("subscribe & assert testing in RxJs", () => {
             expect(val).toEqual(expected[index]);
             index++;
         });
+    });
+
+    it("should compare emitted values on completion with toArray", () => {
+        const source$ = of(1, 2, 3);
+        const final$ = source$.pipe(
+            map(val => val *10),
+            toArray()
+        );
+        const expected = [10, 20, 30];
+        final$.subscribe(val => {
+            expect(val).toEqual(expected);
+        });
+    });
+
+    it("should let you test async operations with done callback", done => {
+        const source$ = of("Ready", "Set", "Go!").pipe(
+            mergeMap((message) => of(message))
+        );
+        const expected = ["Ready", "Set", "Go!"];
+        let index = 0;
+        source$.subscribe(val => {
+            expect(val).toEqual(expected[index]);
+            index++;
+        }, null, done);
     });
 });

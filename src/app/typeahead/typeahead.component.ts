@@ -34,9 +34,7 @@ export class TypeaheadComponent implements AfterViewInit {
                     return this.rows;
                 }),
             )
-            .subscribe((response) => {
-                return response;
-            });
+            .subscribe(); //returns Entry[]
         return [
             {
                 name: "No response",
