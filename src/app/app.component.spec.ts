@@ -168,6 +168,13 @@ describe("Marble testing in RxJS", () => {
         jest.runAllTimers();
         expect(app.counterFinalize).toBe("Stopped!");
     });
+
+    it("should retry", () => {
+        const sub = app.retry();
+        jest.runAllTimers();
+        sub.unsubscribe();
+        expect(sub.closed).toBeTruthy();
+    });
 });
 
 describe("Marble testing in RxJS", () => {

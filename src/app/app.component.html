@@ -68,6 +68,16 @@
     <div class="card-container">
         <a class="card" (click)="count()">count: {{ counter }}</a>
         <a class="card" (click)="countFinalize()">countFinalize: {{ counterFinalize }}</a>
+        <a class="card" (click)="retry()">retry</a>
+        <div>
+            <a class="card" (click)="combinationOperators()">combinationOperators</a>
+            <input class="radio-option" type="radio" id="mergeMap" value="mergeMap" name="rad" [disabled]="disableRadioButtons">
+            <label for="mergeMap">mergeMap</label>
+            <input class="radio-option" type="radio" id="switchMap" value="switchMap" name="rad" [disabled]="disableRadioButtons">
+            <label for="switchMap">switchMap</label>
+            <input class="radio-option" type="radio" id="concatMap" value="concatMap" name="rad" [disabled]="disableRadioButtons">
+            <label for="concatMap">concatMap</label>
+        </div>
     </div>
 </div>
 <div class="content" *ngIf="!show">

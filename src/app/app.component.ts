@@ -6,7 +6,9 @@ import {
     asyncScheduler,
     AsyncSubject,
     BehaviorSubject,
+    fromEvent,
     interval,
+    MonoTypeOperatorFunction,
     Observable,
     of,
     queueScheduler,
@@ -14,10 +16,49 @@ import {
     ReplaySubject,
     Subject,
     Subscription,
+    throwError,
+    timer,
 } from "rxjs";
-import { finalize, mergeMapTo, observeOn, share, shareReplay, subscribeOn, take, takeWhile, tap } from "rxjs/operators";
+import {
+    catchError,
+    concatMap,
+    delay,
+    finalize,
+    mergeMap,
+    mergeMapTo,
+    observeOn,
+    pluck,
+    retryWhen,
+    share,
+    shareReplay,
+    subscribeOn,
+    take,
+    takeWhile,
+    tap,
+    withLatestFrom,
+} from "rxjs/operators";
 import { loadingBehaviorService, loadingService } from "./loading.service";
 import { ObservableStoreComponent } from "./observable-store/observable-store.component";
+
+export function customRetry({ excludedStatusCodes = [], retryAttempts = 3, scalingDuration = 1000 } = {}) {
+    return function(source: { pipe: (arg0: MonoTypeOperatorFunction<unknown>) => any; }) {
+        return source.pipe(
+            retryWhen(attempts => {
+                return attempts.pipe(
+                    mergeMap((error, i) => {
+                        const attemptNumber = i + 1;
+                        if (attemptNumber > retryAttempts || excludedStatusCodes.find(e => e === error.status)) {
+                            console.log("Giving up!");
+                            return throwError(error);
+                        }
+                        console.log(`Attempt ${attemptNumber}: retrying in ${attemptNumber * scalingDuration}ms`);
+                        return timer(attemptNumber * scalingDuration);
+                    })
+                );
+            })
+        );
+    }
+}
 
 @Component({
     selector: "app-root",
@@ -32,6 +73,7 @@ export class AppComponent {
     show = true;
     counter = "";
     counterFinalize = "";
+    disableRadioButtons = true;
 
     observer = {
         next: (val: any) => console.log("next", val),
@@ -308,6 +350,46 @@ export class AppComponent {
         setTimeout(() => {
             sub.unsubscribe();
         }, 3000);
+    }
+
+    retry(): Subscription {
+        const click$ = fromEvent(document, "click");
+        return click$.pipe(
+            mergeMapTo(throwError({
+                status: 400,
+                message: "Server error"
+            }).pipe(
+                customRetry({
+                    retryAttempts: 4
+                }),
+                catchError(err => of(err.message))
+            ))
+        ).subscribe(console.log);
+    }
+
+    combinationOperators(): void {
+        this.disableRadioButtons = false;
+        const saveAnswer = (answer: any, testId: unknown) => {
+            return of({
+                answer,
+                testId
+            }).pipe(delay(200));
+        }
+        const radioButtons = document.querySelectorAll('.radio-option');
+        const answerChange$ = fromEvent(radioButtons, "click");
+        const store$ = new BehaviorSubject({
+            testId: "abc123",
+            complete: false,
+            moreData: {}
+        });
+        answerChange$.pipe(
+            withLatestFrom(store$.pipe(
+                pluck("testId")
+            )),
+            concatMap(([event, testId]) => {
+                return saveAnswer((event.target as HTMLButtonElement).value, testId);
+            })
+        ).subscribe(console.log);
     }
 
     ngOnDestroy(): void {
