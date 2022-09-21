@@ -175,6 +175,21 @@ describe("Marble testing in RxJS", () => {
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
+
+    it("should autoUnsubscribe", () => {
+        const sub = app.autoUnsubscribe();
+        jest.runAllTimers();
+        sub.unsubscribe();
+        expect(sub.closed).toBeTruthy();
+    });
+
+    it("should conditionalSubscribe", () => {
+        const subs = app.conditionalSubscribe();
+        subs.forEach(sub => {
+            sub.unsubscribe();
+            expect(sub.closed).toBeTruthy();
+        });
+    });
 });
 
 describe("Marble testing in RxJS", () => {

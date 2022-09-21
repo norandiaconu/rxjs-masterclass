@@ -78,7 +78,10 @@
             <input class="radio-option" type="radio" id="concatMap" value="concatMap" name="rad" [disabled]="disableRadioButtons">
             <label for="concatMap">concatMap</label>
         </div>
+        <a class="card" (click)="autoUnsubscribe()">autoUnsubscribe</a>
+        <a class="card" (click)="conditionalSubscribe()">conditionalSubscribe</a>
     </div>
+    <div id="box"></div>
 </div>
 <div class="content" *ngIf="!show">
     <typeahead></typeahead>

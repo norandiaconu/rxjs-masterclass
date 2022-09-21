@@ -192,6 +192,13 @@ a:hover {
     text-decoration: none;
 }
 
+#box {
+    position: relative;
+    height: 50px;
+    width: 50px;
+    background-color: red;
+}
+
 /* Responsive Styles */
 @media screen and (max-width: 767px) {
     .card-container > *:not(.circle-link),

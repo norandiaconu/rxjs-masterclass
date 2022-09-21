@@ -11,6 +11,7 @@ import {
     MonoTypeOperatorFunction,
     Observable,
     of,
+    partition,
     queueScheduler,
     range,
     ReplaySubject,
@@ -24,6 +25,7 @@ import {
     concatMap,
     delay,
     finalize,
+    map,
     mergeMap,
     mergeMapTo,
     observeOn,
@@ -33,8 +35,10 @@ import {
     shareReplay,
     subscribeOn,
     take,
+    takeUntil,
     takeWhile,
     tap,
+    throttleTime,
     withLatestFrom,
 } from "rxjs/operators";
 import { loadingBehaviorService, loadingService } from "./loading.service";
@@ -390,6 +394,63 @@ export class AppComponent {
                 return saveAnswer((event.target as HTMLButtonElement).value, testId);
             })
         ).subscribe(console.log);
+    }
+
+    autoUnsubscribe(): Subject<unknown> {
+        const onDestroy$ = new Subject();
+        fromEvent<MouseEvent>(document, "click").pipe(
+            map(event => ({
+                x: event.clientX,
+                y: event.clientY
+            })),
+            takeUntil(onDestroy$)
+        ).subscribe(v => {
+            console.log(v);
+        });
+        fromEvent(document, "scroll").pipe(
+            throttleTime(30),
+            takeUntil(onDestroy$)
+        ).subscribe(v => {
+            console.log(v);
+        });
+        interval(1000).pipe(
+            takeUntil(onDestroy$)
+        ).subscribe(v => {
+            console.log(v);
+        });
+        setTimeout(() => {
+            onDestroy$.next();
+            onDestroy$.complete();
+        }, 2000);
+        return onDestroy$;
+    }
+
+    conditionalSubscribe(): Subscription[] {
+        let leftPosition = 0;
+        const box = document.getElementById("box");
+        const click$ = fromEvent(document, "click");
+        const xPositionClick$ = click$.pipe(
+            map(event => {
+                const e = event as MouseEvent;
+                return {x: e.clientX, y: e.clientY};
+            }),
+        );
+        const [leftSideClick$, rightSideClick$] = partition(xPositionClick$, position => {
+            return position.x < window.innerWidth / 2;
+        });
+        const sub1 = leftSideClick$.subscribe(() => {
+            if (box) {
+                leftPosition -= 20;
+                box.setAttribute("style", "left: " + leftPosition + "px");
+            }
+        });
+        const sub2 = rightSideClick$.subscribe(() => {
+            if (box) {
+                leftPosition += 20;
+                box.setAttribute("style", "left: " + leftPosition + "px");
+            }
+        });
+        return [sub1, sub2];
     }
 
     ngOnDestroy(): void {
