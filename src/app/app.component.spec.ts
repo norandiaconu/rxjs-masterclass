@@ -178,6 +178,7 @@ describe("Marble testing in RxJS", () => {
 
     it("should autoUnsubscribe", () => {
         const sub = app.autoUnsubscribe();
+        document.dispatchEvent(new MouseEvent('click'));
         jest.runAllTimers();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();

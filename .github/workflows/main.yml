@@ -9,11 +9,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: run ci
-        run: npm ci
+      - name: run install
+        run: yarn install --frozen-lockfile
 
       - name: run jest
-        run: npm test
+        run: yarn test
 
       - name: tests passed
         if: ${{ success() }}
