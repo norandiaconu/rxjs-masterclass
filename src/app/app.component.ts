@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import {
     animationFrameScheduler,
@@ -69,7 +69,7 @@ export function customRetry({ excludedStatusCodes = [], retryAttempts = 3, scali
     templateUrl: "./app.component.html",
     styleUrls: ["./app.component.scss"],
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
     private readonly unsubscribe$ = new Subject();
     asapCounter = 0;
     asyncCounter = 0;
