@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { ComponentFixture, fakeAsync, flush, TestBed, tick } from "@angular/core/testing";
+import { ComponentFixture, fakeAsync, TestBed, tick } from "@angular/core/testing";
 import { concat, from, interval, of, Subject } from "rxjs";
 import { catchError, delay, map, mergeMap, take, toArray } from "rxjs/operators";
 import { TestScheduler } from "rxjs/testing";
@@ -132,11 +132,12 @@ describe("Marble testing in RxJS", () => {
         });
     });
 
-    it("should useAnimationFrameScheduler", () => {
+    it("should useAnimationFrameScheduler", fakeAsync(() => {
         const sub = app.useAnimationFrameScheduler();
+        tick(100);
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
-    });
+    }));
 
     it("should useQueueScheduler", () => {
         const sub = app.useQueueScheduler();
