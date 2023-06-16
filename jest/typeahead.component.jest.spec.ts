@@ -1,5 +1,5 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from "@angular/core/testing";
-import { TypeaheadComponent } from "./typeahead.component";
+import { TypeaheadComponent } from "../src/app/typeahead/typeahead.component";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { By } from "@angular/platform-browser";
 

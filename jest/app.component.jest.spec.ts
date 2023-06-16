@@ -3,8 +3,8 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { concat, from, interval, of, Subject } from "rxjs";
 import { catchError, delay, map, mergeMap, take, toArray } from "rxjs/operators";
 import { TestScheduler } from "rxjs/testing";
-import { AppComponent } from "./app.component";
-import { loadingBehaviorService } from "./loading.service";
+import { AppComponent } from "../src/app/app.component";
+import { loadingBehaviorService } from "../src/app/loading.service";
 
 describe("Marble testing in RxJS", () => {
     let fixture: ComponentFixture<AppComponent>;

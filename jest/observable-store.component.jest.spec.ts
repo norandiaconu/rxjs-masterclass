@@ -1,4 +1,4 @@
-import { ObservableStoreComponent } from './observable-store.component';
+import { ObservableStoreComponent } from '../src/app/observable-store/observable-store.component';
 
 describe("ObservableStoreComponent", () => {
 
