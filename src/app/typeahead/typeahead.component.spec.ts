@@ -40,7 +40,7 @@ describe("TypeaheadComponent", () => {
             },
         ];
         tick(200);
-        expect(rows).toEqual(empty);
+        expect(rows).toStrictEqual(empty);
     }));
 
     function sendInput(text: string) {

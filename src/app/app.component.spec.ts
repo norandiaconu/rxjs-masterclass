@@ -9,6 +9,7 @@ import { loadingBehaviorService } from "./loading.service";
 describe("Marble testing in RxJS", () => {
     let fixture: ComponentFixture<AppComponent>;
     let app: AppComponent;
+    jest.useFakeTimers();
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -47,6 +48,7 @@ describe("Marble testing in RxJS", () => {
 
     it("should behaviorSubject", () => {
         const subs = app.behaviorSubject();
+        jest.runAllTimers();
         subs.forEach(sub => {
             sub.unsubscribe();
             expect(sub.closed).toBeTruthy();
@@ -55,12 +57,14 @@ describe("Marble testing in RxJS", () => {
 
     it("should loading", () => {
         const sub = app.loading();
+        jest.runAllTimers();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
 
     it("should loadingWithService", () => {
         const sub = app.loadingWithService();
+        jest.runAllTimers();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
@@ -68,6 +72,7 @@ describe("Marble testing in RxJS", () => {
     it("should ngOnInit/loadingBehaviorSubject", () => {
         app.ngOnInit();
         const sub = app.loadingBehaviorSubject();
+        jest.runAllTimers();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
@@ -75,6 +80,7 @@ describe("Marble testing in RxJS", () => {
     it("should ngOnInit/loadingBehaviorSubject and showLoading", () => {
         app.ngOnInit();
         const sub = app.loadingBehaviorSubject();
+        jest.runAllTimers();
         loadingBehaviorService.showLoading();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
@@ -82,7 +88,7 @@ describe("Marble testing in RxJS", () => {
 
     it("should useObservableStore", () => {
         const store = app.useObservableStore();
-        expect(store._store.value).toEqual({"isAuthenticated": true, "user": "Diaconu"});
+        expect(store._store.value).toStrictEqual({"isAuthenticated": true, "user": "Diaconu"});
     });
     
     it("should useReplaySubject", () => {
@@ -93,6 +99,7 @@ describe("Marble testing in RxJS", () => {
     
     it("should useShareReplay", () => {
         const sub = app.useShareReplay();
+        jest.runAllTimers();
         expect(sub).toBeTruthy();
     });
 
@@ -132,12 +139,11 @@ describe("Marble testing in RxJS", () => {
         });
     });
 
-    it("should useAnimationFrameScheduler", fakeAsync(() => {
+    it("should useAnimationFrameScheduler", () => {
         const sub = app.useAnimationFrameScheduler();
-        tick(100);
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
-    }));
+    });
 
     it("should useQueueScheduler", () => {
         const sub = app.useQueueScheduler();
@@ -151,20 +157,21 @@ describe("Marble testing in RxJS", () => {
         expect(app.show).toBeTruthy();
     });
 
-    it("should count", fakeAsync(() => {
+    it("should count", () => {
         app.count();
-        tick(3000);
+        jest.runAllTimers();
         expect(app.counter).toBe("Stopped!");
-    }));
+    });
 
-    it("should countFinalize", fakeAsync(() => {
+    it("should countFinalize", () => {
         app.countFinalize();
-        tick(3000);
+        jest.runAllTimers();
         expect(app.counterFinalize).toBe("Stopped!");
-    }));
+    });
 
     it("should retry", () => {
         const sub = app.retry();
+        jest.runAllTimers();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
@@ -172,6 +179,7 @@ describe("Marble testing in RxJS", () => {
     it("should autoUnsubscribe", () => {
         const sub = app.autoUnsubscribe();
         document.dispatchEvent(new MouseEvent('click'));
+        jest.runAllTimers();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });

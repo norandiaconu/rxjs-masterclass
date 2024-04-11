@@ -35,7 +35,7 @@ describe("ObservableStoreComponent", () => {
         store.completeState();
         expect(store._store.isStopped).toBeTruthy();
         expect(store._stateUpdates.isStopped).toBeTruthy();
-        expect(store._stateUpdates.observers).toEqual([]);
+        expect(store._stateUpdates.observers).toStrictEqual([]);
         expect(store).toBeTruthy();
     });
 });
