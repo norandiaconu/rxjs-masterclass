@@ -1,9 +1,11 @@
 <div id="typeahead">
-    <input #textInput id="textInput">
-    <br/>
-    <div id="entryRows">
-        <div *ngFor="let row of rows | async">
-            {{ row.name }}
-        </div>
-    </div>
+  <input #textInput id="textInput">
+  <br/>
+  <div id="entryRows">
+    @for (row of rows | async; track row) {
+      <div>
+        {{ row.name }}
+      </div>
+    }
+  </div>
 </div>

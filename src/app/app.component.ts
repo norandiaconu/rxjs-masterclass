@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import {
     animationFrameScheduler,
@@ -43,6 +43,9 @@ import {
 } from "rxjs/operators";
 import { loadingBehaviorService, loadingService } from "./loading.service";
 import { ObservableStoreComponent } from "./observable-store/observable-store.component";
+import { NgStyle } from "@angular/common";
+import { TypeaheadComponent } from "./typeahead/typeahead.component";
+import { RouterOutlet } from "@angular/router";
 
 export function customRetry({ excludedStatusCodes = [], retryAttempts = 3, scalingDuration = 1000 } = {}) {
     return function(source: { pipe: (arg0: MonoTypeOperatorFunction<unknown>) => any; }) {
@@ -68,8 +71,16 @@ export function customRetry({ excludedStatusCodes = [], retryAttempts = 3, scali
     selector: "app-root",
     templateUrl: "./app.component.html",
     styleUrls: ["./app.component.scss"],
+    standalone: true,
+    imports: [
+    NgStyle,
+    TypeaheadComponent,
+    RouterOutlet
+],
 })
 export class AppComponent implements OnInit, OnDestroy {
+    private httpClient = inject(HttpClient);
+
     private readonly unsubscribe$ = new Subject();
     asapCounter = 0;
     asyncCounter = 0;
@@ -84,8 +95,6 @@ export class AppComponent implements OnInit, OnDestroy {
         error: (err: any) => console.log("error", err),
         complete: () => console.log("complete"),
     };
-
-    constructor(private httpClient: HttpClient) {}
 
     ngOnInit(): void {
         this.loadingBehaviorSubject();

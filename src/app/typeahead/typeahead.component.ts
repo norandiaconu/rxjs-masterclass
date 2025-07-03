@@ -1,7 +1,8 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, ViewChild, inject } from "@angular/core";
 import { fromEvent, Observable } from "rxjs";
 import { debounceTime, distinctUntilChanged, pluck, switchMap } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
+import { AsyncPipe } from "@angular/common";
 
 interface Entry {
     name: string;
@@ -11,12 +12,14 @@ interface Entry {
     selector: "typeahead",
     templateUrl: "./typeahead.component.html",
     styleUrls: ["./typeahead.component.scss"],
+    standalone: true,
+    imports: [AsyncPipe],
 })
 export class TypeaheadComponent implements AfterViewInit {
+    private http = inject(HttpClient);
+
     @ViewChild("textInput") inputBox!: ElementRef;
     rows: Observable<Entry[]>;
-
-    constructor(private http: HttpClient) {}
 
     ngAfterViewInit(): void {
         this.search();

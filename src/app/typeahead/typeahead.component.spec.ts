@@ -1,4 +1,9 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from "@angular/core/testing";
+import {
+    ComponentFixture,
+    fakeAsync,
+    TestBed,
+    tick
+} from "@angular/core/testing";
 import { TypeaheadComponent } from "./typeahead.component";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { By } from "@angular/platform-browser";
@@ -9,8 +14,7 @@ describe("TypeaheadComponent", () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [TypeaheadComponent],
-            imports: [HttpClientTestingModule],
+            imports: [HttpClientTestingModule, TypeaheadComponent]
         }).compileComponents();
     });
 
@@ -36,8 +40,8 @@ describe("TypeaheadComponent", () => {
         const rows = component.search();
         const empty = [
             {
-                name: "No response",
-            },
+                name: "No response"
+            }
         ];
         tick(200);
         expect(rows).toStrictEqual(empty);

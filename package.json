@@ -1,12 +1,11 @@
 {
     "name": "rxjs-masterclass",
-    "version": "18.0.0",
+    "version": "18.1.0",
     "scripts": {
         "start": "ng serve",
         "build": "ng build && start http://localhost:8080 && http-server ./docs -a localhost -p 8080",
         "test": "jest",
-        "lint": "eslint .",
-        "full": "npm run lint && npm run test && npm run build"
+        "lint": "eslint ."
     },
     "private": true,
     "dependencies": {
@@ -15,7 +14,6 @@
         "@angular/compiler": "^18.2.13",
         "@angular/core": "^18.2.13",
         "@angular/platform-browser": "^18.2.13",
-        "@angular/platform-browser-dynamic": "^18.2.13",
         "@angular/router": "^18.2.13",
         "rxjs": "6.6.7",
         "tslib": "^2.4.0",
@@ -23,15 +21,13 @@
     },
     "devDependencies": {
         "@angular-devkit/build-angular": "^18.2.19",
-        "@angular-eslint/builder": "18.4.3",
-        "@angular-eslint/schematics": "18.4.3",
-        "@angular-eslint/template-parser": "18.4.3",
         "@angular/cli": "^18.2.19",
         "@angular/compiler-cli": "^18.2.13",
-        "@types/jest": "^28.1.7",
-        "@types/node": "16.18.34",
+        "@types/jest": "~29.5.14",
+        "@types/node": "~22.9.0",
         "@typescript-eslint/eslint-plugin": "^7.2.0",
         "@typescript-eslint/parser": "^7.2.0",
+        "angular-eslint": "~18.4.3",
         "eslint": "^8.57.0",
         "http-server": "^14.1.1",
         "jest": "^29.7.0",
