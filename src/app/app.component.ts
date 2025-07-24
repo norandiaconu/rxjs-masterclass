@@ -71,12 +71,11 @@ export function customRetry({ excludedStatusCodes = [], retryAttempts = 3, scali
     selector: "app-root",
     templateUrl: "./app.component.html",
     styleUrls: ["./app.component.scss"],
-    standalone: true,
     imports: [
-    NgStyle,
-    TypeaheadComponent,
-    RouterOutlet
-],
+        NgStyle,
+        TypeaheadComponent,
+        RouterOutlet
+    ]
 })
 export class AppComponent implements OnInit, OnDestroy {
     private httpClient = inject(HttpClient);

@@ -11,6 +11,7 @@ interface UserState {
     selector: "observable-store",
     templateUrl: "./observable-store.component.html",
     styleUrls: ["./observable-store.component.scss"],
+    standalone: false
 })
 export class ObservableStoreComponent {
     _store: BehaviorSubject<UserState>;

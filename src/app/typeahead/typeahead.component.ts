@@ -12,8 +12,7 @@ interface Entry {
     selector: "typeahead",
     templateUrl: "./typeahead.component.html",
     styleUrls: ["./typeahead.component.scss"],
-    standalone: true,
-    imports: [AsyncPipe],
+    imports: [AsyncPipe]
 })
 export class TypeaheadComponent implements AfterViewInit {
     private http = inject(HttpClient);
