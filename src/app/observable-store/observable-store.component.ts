@@ -1,16 +1,16 @@
-import { Component } from "@angular/core";
-import { BehaviorSubject, Observable, Subject } from "rxjs";
-import { distinctUntilKeyChanged, pluck, scan } from "rxjs/operators";
+import { Component } from '@angular/core';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { distinctUntilKeyChanged, pluck, scan } from 'rxjs/operators';
 
 interface UserState {
-    user: string,
-    isAuthenticated: boolean,
-};
+    user: string;
+    isAuthenticated: boolean;
+}
 
 @Component({
-    selector: "observable-store",
-    templateUrl: "./observable-store.component.html",
-    styleUrls: ["./observable-store.component.scss"],
+    selector: 'observable-store',
+    templateUrl: './observable-store.component.html',
+    styleUrls: ['./observable-store.component.scss'],
     standalone: false
 })
 export class ObservableStoreComponent {
@@ -22,11 +22,13 @@ export class ObservableStoreComponent {
     setup(initialState: UserState): void {
         this._store = new BehaviorSubject(initialState);
         this._stateUpdates = new Subject();
-        this._stateUpdates.pipe(
-            scan((acc: any, curr: any) => {
-                return {...acc, ...curr};
-            }, initialState)
-        ).subscribe(this._store);
+        this._stateUpdates
+            .pipe(
+                scan((acc: any, curr: any) => {
+                    return { ...acc, ...curr };
+                }, initialState)
+            )
+            .subscribe(this._store);
     }
 
     updateState(stateUpdate: any): void {

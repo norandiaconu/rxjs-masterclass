@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit, inject } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import {
     animationFrameScheduler,
     asapScheduler,
@@ -18,8 +18,8 @@ import {
     Subject,
     Subscription,
     throwError,
-    timer,
-} from "rxjs";
+    timer
+} from 'rxjs';
 import {
     catchError,
     concatMap,
@@ -39,43 +39,52 @@ import {
     takeWhile,
     tap,
     throttleTime,
-    withLatestFrom,
-} from "rxjs/operators";
-import { loadingBehaviorService, loadingService } from "./loading.service";
-import { ObservableStoreComponent } from "./observable-store/observable-store.component";
-import { NgStyle } from "@angular/common";
-import { TypeaheadComponent } from "./typeahead/typeahead.component";
-import { RouterOutlet } from "@angular/router";
+    withLatestFrom
+} from 'rxjs/operators';
+import { loadingBehaviorService, loadingService } from './loading.service';
+import { ObservableStoreComponent } from './observable-store/observable-store.component';
+import { NgStyle } from '@angular/common';
+import { TypeaheadComponent } from './typeahead/typeahead.component';
+import { RouterOutlet } from '@angular/router';
 
-export function customRetry({ excludedStatusCodes = [], retryAttempts = 3, scalingDuration = 1000 } = {}) {
-    return function(source: { pipe: (arg0: MonoTypeOperatorFunction<unknown>) => any; }) {
+export function customRetry({
+    excludedStatusCodes = [],
+    retryAttempts = 3,
+    scalingDuration = 1000
+} = {}) {
+    return function (source: {
+        pipe: (arg0: MonoTypeOperatorFunction<unknown>) => any;
+    }) {
         return source.pipe(
-            retryWhen(attempts => {
+            retryWhen((attempts) => {
                 return attempts.pipe(
                     mergeMap((error, i) => {
                         const attemptNumber = i + 1;
-                        if (attemptNumber > retryAttempts || excludedStatusCodes.find(e => e === error.status)) {
-                            console.log("Giving up!");
+                        if (
+                            attemptNumber > retryAttempts ||
+                            excludedStatusCodes.find((e) => e === error.status)
+                        ) {
+                            console.log('Giving up!');
                             return throwError(error);
                         }
-                        console.log(`Attempt ${attemptNumber}: retrying in ${attemptNumber * scalingDuration}ms`);
+                        console.log(
+                            `Attempt ${attemptNumber}: retrying in ${
+                                attemptNumber * scalingDuration
+                            }ms`
+                        );
                         return timer(attemptNumber * scalingDuration);
                     })
                 );
             })
         );
-    }
+    };
 }
 
 @Component({
-    selector: "app-root",
-    templateUrl: "./app.component.html",
-    styleUrls: ["./app.component.scss"],
-    imports: [
-        NgStyle,
-        TypeaheadComponent,
-        RouterOutlet
-    ]
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    imports: [NgStyle, TypeaheadComponent, RouterOutlet]
 })
 export class AppComponent implements OnInit, OnDestroy {
     private httpClient = inject(HttpClient);
@@ -85,14 +94,14 @@ export class AppComponent implements OnInit, OnDestroy {
     asyncCounter = 0;
     position = -270;
     show = true;
-    counter = "";
-    counterFinalize = "";
+    counter = '';
+    counterFinalize = '';
     disableRadioButtons = true;
 
     observer = {
-        next: (val: any) => console.log("next", val),
-        error: (err: any) => console.log("error", err),
-        complete: () => console.log("complete"),
+        next: (val: any) => console.log('next', val),
+        error: (err: any) => console.log('error', err),
+        complete: () => console.log('complete')
     };
 
     ngOnInit(): void {
@@ -105,14 +114,14 @@ export class AppComponent implements OnInit, OnDestroy {
     interval(): Subscription {
         const subject = new Subject();
         const subscription = subject.subscribe(this.observer);
-        subject.next("Hello");
+        subject.next('Hello');
         const subscriptionTwo = subject.subscribe(this.observer);
-        subject.next("World");
+        subject.next('World');
         // next messages will be printed twice (subscription and subscriptionTwo) every two seconds
         // new interval will only be printed once every two seconds
         const interval$ = interval(2000).pipe(
             take(5),
-            tap((value: number) => console.log("new interval", value)),
+            tap((value: number) => console.log('new interval', value))
         );
         return interval$.subscribe(subject);
         // completes at the end because of the take within the pipe
@@ -122,7 +131,7 @@ export class AppComponent implements OnInit, OnDestroy {
     multicastInterval(): Subscription[] {
         const interval$ = interval(2000).pipe(
             take(5),
-            tap((value: number) => console.log("new interval", value)),
+            tap((value: number) => console.log('new interval', value))
         );
         const multicastedInterval$ = interval$.pipe(share());
         const subOne = multicastedInterval$.subscribe(this.observer);
@@ -132,10 +141,10 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     behaviorSubject(): Subscription[] {
-        const subject = new BehaviorSubject("Hello");
+        const subject = new BehaviorSubject('Hello');
         const subscription = subject.subscribe(this.observer);
         const subscriptionTwo = subject.subscribe(this.observer);
-        subject.next("World");
+        subject.next('World');
         setTimeout(() => {
             subject.subscribe(this.observer);
             subject.complete();
@@ -145,13 +154,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // old way of displaying the loading overlay, can be run with loading() button
     loading(): Subscription {
-        const loadingOverlay = document.getElementById("loading-overlay");
+        const loadingOverlay = document.getElementById('loading-overlay');
         const loading$ = new Subject<boolean>();
         const sub = loading$.subscribe((isLoading) => {
             if (isLoading) {
-                loadingOverlay?.classList.add("open");
+                loadingOverlay?.classList.add('open');
             } else {
-                loadingOverlay?.classList.remove("open");
+                loadingOverlay?.classList.remove('open');
             }
         });
         loading$.next(true);
@@ -164,14 +173,16 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // better method of displaying the loading overlay where show/hide methods are called instead
     loadingWithService(): Subscription {
-        const loadingOverlay = document.getElementById("loading-overlay");
-        const loadingSub = loadingService.loadingStatus$.subscribe((isLoading) => {
-            if (isLoading) {
-                loadingOverlay?.classList.add("open");
-            } else {
-                loadingOverlay?.classList.remove("open");
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const loadingSub = loadingService.loadingStatus$.subscribe(
+            (isLoading) => {
+                if (isLoading) {
+                    loadingOverlay?.classList.add('open');
+                } else {
+                    loadingOverlay?.classList.remove('open');
+                }
             }
-        });
+        );
         loadingService.showLoading();
         setTimeout(() => {
             loadingService.hideLoading();
@@ -182,14 +193,17 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // do not need to call showLoading directly when using Behavior Subject
     loadingBehaviorSubject(): Subscription {
-        const loadingOverlay = document.getElementById("loading-overlay");
-        const loadingSub = loadingBehaviorService.loadingBehaviorStatus$.subscribe((isLoading) => {
-            if (isLoading) {
-                loadingOverlay?.classList.add("open");
-            } else {
-                loadingOverlay?.classList.remove("open");
-            }
-        });
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const loadingSub =
+            loadingBehaviorService.loadingBehaviorStatus$.subscribe(
+                (isLoading) => {
+                    if (isLoading) {
+                        loadingOverlay?.classList.add('open');
+                    } else {
+                        loadingOverlay?.classList.remove('open');
+                    }
+                }
+            );
         setTimeout(() => {
             loadingBehaviorService.hideLoading();
             loadingSub.unsubscribe();
@@ -201,15 +215,15 @@ export class AppComponent implements OnInit, OnDestroy {
     useObservableStore(): ObservableStoreComponent {
         const store = new ObservableStoreComponent();
         store.setup({
-            user: "Noran",
-            isAuthenticated: false,
+            user: 'Noran',
+            isAuthenticated: false
         });
-        store.selectState("user").subscribe(console.log);
+        store.selectState('user').subscribe(console.log);
         store.updateState({
-            user: "Diaconu",
+            user: 'Diaconu'
         });
         store.updateState({
-            isAuthenticated: true,
+            isAuthenticated: true
         });
 
         store.completeState();
@@ -219,9 +233,9 @@ export class AppComponent implements OnInit, OnDestroy {
     // replay the last "two" next calls when subscribing to the ReplaySubject
     useReplaySubject(): ReplaySubject<string> {
         const subject = new ReplaySubject<string>(2);
-        subject.next("Hello");
-        subject.next("World");
-        subject.next("Goodbye");
+        subject.next('Hello');
+        subject.next('World');
+        subject.next('Goodbye');
         subject.subscribe(this.observer);
 
         subject.complete();
@@ -230,11 +244,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // shareReplay allows the get request to only occur once and the result is passed to each subscription
     useShareReplay(): Observable<Object> {
-        const httpCall = this.httpClient.get("https://api.github.com/users/octocat");
+        const httpCall = this.httpClient.get(
+            'https://api.github.com/users/octocat'
+        );
         const request$ = httpCall.pipe(mergeMapTo(httpCall), shareReplay(1));
         request$.subscribe(this.observer);
         setTimeout(() => {
-            console.log("subscribing");
+            console.log('subscribing');
             request$.subscribe(this.observer);
         }, 3000);
         return request$;
@@ -245,9 +261,9 @@ export class AppComponent implements OnInit, OnDestroy {
         const subject = new AsyncSubject<string>();
         subject.subscribe(this.observer);
         subject.subscribe(this.observer);
-        subject.next("Hello");
-        subject.next("World");
-        subject.next("Goodbye");
+        subject.next('Hello');
+        subject.next('World');
+        subject.next('Goodbye');
         subject.complete();
         return subject;
     }
@@ -256,36 +272,36 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // used instead of setTimeout to postpone execution, but delay() is preferred as errors are thrown right away
     useAsyncScheduler(): Subscription[] {
-        asyncScheduler.schedule(console.log, 3000, "Hello world");
+        asyncScheduler.schedule(console.log, 3000, 'Hello world');
         const sub1 = of(7, 8, 9)
             .pipe(
-                tap((val) => console.log("tap789", val)),
-                subscribeOn(asyncScheduler, 2000),
+                tap((val) => console.log('tap789', val)),
+                subscribeOn(asyncScheduler, 2000)
             )
             .subscribe(this.observer);
         const sub2 = of(4, 5, 6)
             .pipe(
-                tap((val) => console.log("tap456", val)),
-                observeOn(asyncScheduler, 1000),
+                tap((val) => console.log('tap456', val)),
+                observeOn(asyncScheduler, 1000)
             )
             .subscribe(this.observer);
         const sub3 = of(1, 2, 3).subscribe(this.observer);
-        console.log("sync");
+        console.log('sync');
         return [sub1, sub2, sub3];
     }
 
     // compare display timing of asapScheduler compared to other methods
     useAsapScheduler(): Subscription {
         asyncScheduler.schedule(() => {
-            console.log("asyncScheduler");
+            console.log('asyncScheduler');
         });
         asapScheduler.schedule(() => {
-            console.log("asapScheduler");
+            console.log('asapScheduler');
         });
-        queueMicrotask(() => console.log("microtask"));
-        Promise.resolve("promise").then(console.log);
+        queueMicrotask(() => console.log('microtask'));
+        Promise.resolve('promise').then(console.log);
         const sub = range(1, 5).subscribe(this.observer);
-        console.log("sync");
+        console.log('sync');
         return sub;
     }
 
@@ -295,7 +311,7 @@ export class AppComponent implements OnInit, OnDestroy {
         const sub2 = range(1, 500, asyncScheduler)
             .pipe(tap((val) => (this.asyncCounter = val)))
             .subscribe();
-        console.log("sync");
+        console.log('sync');
         return [sub1, sub2];
     }
 
@@ -305,7 +321,7 @@ export class AppComponent implements OnInit, OnDestroy {
         const sub2 = range(1, 1000000, asapScheduler)
             .pipe(tap((val) => (this.asapCounter = val)))
             .subscribe();
-        console.log("sync");
+        console.log('sync');
         return [sub1, sub2];
     }
 
@@ -314,7 +330,7 @@ export class AppComponent implements OnInit, OnDestroy {
         return interval(0, animationFrameScheduler)
             .pipe(
                 takeWhile((val) => val <= 350),
-                tap((val) => (this.position = val - 270)),
+                tap((val) => (this.position = val - 270))
             )
             .subscribe();
     }
@@ -323,12 +339,12 @@ export class AppComponent implements OnInit, OnDestroy {
     useQueueScheduler(): Subscription {
         const sub = queueScheduler.schedule(() => {
             queueScheduler.schedule(() => {
-                queueScheduler.schedule(() => console.log("inner queue"));
-                console.log("middle queue");
+                queueScheduler.schedule(() => console.log('inner queue'));
+                console.log('middle queue');
             });
-            console.log("outer queue");
+            console.log('outer queue');
         });
-        console.log("sync");
+        console.log('sync');
         return sub;
     }
 
@@ -337,46 +353,52 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     count(): void {
-        this.counter = "";
-        const sub = interval(1000).pipe(
-            take(3)
-        ).subscribe({
-            next: val => {
-                this.counter = val.toString();
-            },
-            complete: () => {
-                this.counter = "Stopped!";
-            }
-        });
+        this.counter = '';
+        const sub = interval(1000)
+            .pipe(take(3))
+            .subscribe({
+                next: (val) => {
+                    this.counter = val.toString();
+                },
+                complete: () => {
+                    this.counter = 'Stopped!';
+                }
+            });
     }
 
     countFinalize(): void {
-        this.counterFinalize = "";
-        const sub = interval(1000).pipe(
-            finalize(() => {
-                this.counterFinalize = "Stopped!";
-            })
-        ).subscribe(val => {
-            this.counterFinalize = val.toString();
-        });
+        this.counterFinalize = '';
+        const sub = interval(1000)
+            .pipe(
+                finalize(() => {
+                    this.counterFinalize = 'Stopped!';
+                })
+            )
+            .subscribe((val) => {
+                this.counterFinalize = val.toString();
+            });
         setTimeout(() => {
             sub.unsubscribe();
         }, 3000);
     }
 
     retry(): Subscription {
-        const click$ = fromEvent(document, "click");
-        return click$.pipe(
-            mergeMapTo(throwError({
-                status: 400,
-                message: "Server error"
-            }).pipe(
-                customRetry({
-                    retryAttempts: 4
-                }),
-                catchError(err => of(err.message))
-            ))
-        ).subscribe(console.log);
+        const click$ = fromEvent(document, 'click');
+        return click$
+            .pipe(
+                mergeMapTo(
+                    throwError({
+                        status: 400,
+                        message: 'Server error'
+                    }).pipe(
+                        customRetry({
+                            retryAttempts: 4
+                        }),
+                        catchError((err) => of(err.message))
+                    )
+                )
+            )
+            .subscribe(console.log);
     }
 
     combinationOperators(): void {
@@ -386,46 +408,50 @@ export class AppComponent implements OnInit, OnDestroy {
                 answer,
                 testId
             }).pipe(delay(200));
-        }
+        };
         const radioButtons = document.querySelectorAll('.radio-option');
-        const answerChange$ = fromEvent(radioButtons, "click");
+        const answerChange$ = fromEvent(radioButtons, 'click');
         const store$ = new BehaviorSubject({
-            testId: "abc123",
+            testId: 'abc123',
             complete: false,
             moreData: {}
         });
-        answerChange$.pipe(
-            withLatestFrom(store$.pipe(
-                pluck("testId")
-            )),
-            concatMap(([event, testId]) => {
-                return saveAnswer((event.target as HTMLButtonElement).value, testId);
-            })
-        ).subscribe(console.log);
+        answerChange$
+            .pipe(
+                withLatestFrom(store$.pipe(pluck('testId'))),
+                concatMap(([event, testId]) => {
+                    return saveAnswer(
+                        (event.target as HTMLButtonElement).value,
+                        testId
+                    );
+                })
+            )
+            .subscribe(console.log);
     }
 
     autoUnsubscribe(): Subject<unknown> {
         const onDestroy$ = new Subject();
-        fromEvent<MouseEvent>(document, "click").pipe(
-            map(event => ({
-                x: event.clientX,
-                y: event.clientY
-            })),
-            takeUntil(onDestroy$)
-        ).subscribe(v => {
-            console.log(v);
-        });
-        fromEvent(document, "scroll").pipe(
-            throttleTime(30),
-            takeUntil(onDestroy$)
-        ).subscribe(v => {
-            console.log(v);
-        });
-        interval(1000).pipe(
-            takeUntil(onDestroy$)
-        ).subscribe(v => {
-            console.log(v);
-        });
+        fromEvent<MouseEvent>(document, 'click')
+            .pipe(
+                map((event) => ({
+                    x: event.clientX,
+                    y: event.clientY
+                })),
+                takeUntil(onDestroy$)
+            )
+            .subscribe((v) => {
+                console.log(v);
+            });
+        fromEvent(document, 'scroll')
+            .pipe(throttleTime(30), takeUntil(onDestroy$))
+            .subscribe((v) => {
+                console.log(v);
+            });
+        interval(1000)
+            .pipe(takeUntil(onDestroy$))
+            .subscribe((v) => {
+                console.log(v);
+            });
         setTimeout(() => {
             onDestroy$.next();
             onDestroy$.complete();
@@ -435,27 +461,30 @@ export class AppComponent implements OnInit, OnDestroy {
 
     conditionalSubscribe(): Subscription[] {
         let leftPosition = 0;
-        const box = document.getElementById("box");
-        const click$ = fromEvent(document, "click");
+        const box = document.getElementById('box');
+        const click$ = fromEvent(document, 'click');
         const xPositionClick$ = click$.pipe(
-            map(event => {
+            map((event) => {
                 const e = event as MouseEvent;
-                return {x: e.clientX, y: e.clientY};
-            }),
+                return { x: e.clientX, y: e.clientY };
+            })
         );
-        const [leftSideClick$, rightSideClick$] = partition(xPositionClick$, position => {
-            return position.x < window.innerWidth / 2;
-        });
+        const [leftSideClick$, rightSideClick$] = partition(
+            xPositionClick$,
+            (position) => {
+                return position.x < window.innerWidth / 2;
+            }
+        );
         const sub1 = leftSideClick$.subscribe(() => {
             if (box) {
                 leftPosition -= 20;
-                box.setAttribute("style", "left: " + leftPosition + "px");
+                box.setAttribute('style', 'left: ' + leftPosition + 'px');
             }
         });
         const sub2 = rightSideClick$.subscribe(() => {
             if (box) {
                 leftPosition += 20;
-                box.setAttribute("style", "left: " + leftPosition + "px");
+                box.setAttribute('style', 'left: ' + leftPosition + 'px');
             }
         });
         return [sub1, sub2];

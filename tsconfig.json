@@ -2,9 +2,7 @@
 {
     "compileOnSave": false,
     "compilerOptions": {
-        "baseUrl": "./",
         "outDir": "./dist/out-tsc",
-        "forceConsistentCasingInFileNames": true,
         "strict": true,
         "strictPropertyInitialization": false,
         "noImplicitReturns": true,
@@ -16,7 +14,6 @@
         "importHelpers": true,
         "target": "ES2022",
         "module": "es2020",
-        "lib": ["es2018", "dom"],
         "esModuleInterop": true,
         "useDefineForClassFields": false
     },

@@ -1,6 +1,6 @@
 {
     "name": "rxjs-masterclass",
-    "version": "19.0.0",
+    "version": "19.1.0",
     "scripts": {
         "start": "ng serve",
         "build": "ng build && vite preview --port 8080 --outDir ./docs/browser --open",

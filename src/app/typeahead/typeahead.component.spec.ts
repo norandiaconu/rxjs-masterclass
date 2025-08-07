@@ -3,12 +3,12 @@ import {
     fakeAsync,
     TestBed,
     tick
-} from "@angular/core/testing";
-import { TypeaheadComponent } from "./typeahead.component";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { By } from "@angular/platform-browser";
+} from '@angular/core/testing';
+import { TypeaheadComponent } from './typeahead.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { By } from '@angular/platform-browser';
 
-describe("TypeaheadComponent", () => {
+describe('TypeaheadComponent', () => {
     let component: TypeaheadComponent;
     let fixture: ComponentFixture<TypeaheadComponent>;
 
@@ -24,23 +24,23 @@ describe("TypeaheadComponent", () => {
         fixture.detectChanges();
     });
 
-    it("should create", () => {
+    it('should create', () => {
         expect(component).toBeTruthy();
     });
 
-    it("should test input box", () => {
-        sendInput("test");
-        const input = fixture.debugElement.query(By.css("#textInput"));
+    it('should test input box', () => {
+        sendInput('test');
+        const input = fixture.debugElement.query(By.css('#textInput'));
         component.search();
-        expect(input.nativeElement.value).toBe("test");
+        expect(input.nativeElement.value).toBe('test');
     });
 
-    it("should test search", fakeAsync(() => {
-        sendInput("test");
+    it('should test search', fakeAsync(() => {
+        sendInput('test');
         const rows = component.search();
         const empty = [
             {
-                name: "No response"
+                name: 'No response'
             }
         ];
         tick(200);
@@ -48,9 +48,9 @@ describe("TypeaheadComponent", () => {
     }));
 
     function sendInput(text: string) {
-        const input = fixture.debugElement.query(By.css("#textInput"));
+        const input = fixture.debugElement.query(By.css('#textInput'));
         input.nativeElement.value = text;
-        input.nativeElement.dispatchEvent(new Event("input"));
+        input.nativeElement.dispatchEvent(new Event('input'));
         fixture.detectChanges();
         return fixture.whenStable();
     }
