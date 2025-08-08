@@ -1,6 +1,6 @@
 {
     "name": "rxjs-masterclass",
-    "version": "19.1.0",
+    "version": "19.1.1",
     "scripts": {
         "start": "ng serve",
         "build": "ng build && vite preview --port 8080 --outDir ./docs/browser --open",
@@ -14,7 +14,6 @@
         "@angular/core": "^19.2.14",
         "@angular/platform-browser": "^19.2.14",
         "@angular/platform-browser-dynamic": "~19.2.14",
-        "@angular/router": "^19.2.14",
         "rxjs": "6.6.7",
         "zone.js": "^0.15.1"
     },

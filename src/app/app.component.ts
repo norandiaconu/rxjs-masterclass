@@ -45,7 +45,6 @@ import { loadingBehaviorService, loadingService } from './loading.service';
 import { ObservableStoreComponent } from './observable-store/observable-store.component';
 import { NgStyle } from '@angular/common';
 import { TypeaheadComponent } from './typeahead/typeahead.component';
-import { RouterOutlet } from '@angular/router';
 
 export function customRetry({
     excludedStatusCodes = [],
@@ -84,7 +83,7 @@ export function customRetry({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    imports: [NgStyle, TypeaheadComponent, RouterOutlet]
+    imports: [NgStyle, TypeaheadComponent]
 })
 export class AppComponent implements OnInit, OnDestroy {
     private httpClient = inject(HttpClient);

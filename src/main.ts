@@ -5,7 +5,6 @@ import {
     withInterceptorsFromDi
 } from '@angular/common/http';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
-import { AppRoutingModule } from './app/app-routing.module';
 import { AppComponent } from './app/app.component';
 
 if (environment.production) {
@@ -14,7 +13,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
     providers: [
-        importProvidersFrom(BrowserModule, AppRoutingModule),
+        importProvidersFrom(BrowserModule),
         provideHttpClient(withInterceptorsFromDi())
     ]
 }).catch((err) => console.error(err));
