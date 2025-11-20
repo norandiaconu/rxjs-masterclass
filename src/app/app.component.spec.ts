@@ -1,17 +1,10 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { concat, from, interval, of, Subject } from 'rxjs';
-import {
-    catchError,
-    delay,
-    map,
-    mergeMap,
-    take,
-    toArray
-} from 'rxjs/operators';
+import { catchError, delay, map, mergeMap, take, toArray } from 'rxjs/operators';
 import { TestScheduler } from 'rxjs/testing';
 import { AppComponent } from './app.component';
 import { loadingBehaviorService } from './loading.service';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('Marble testing in RxJS', () => {
     let fixture: ComponentFixture<AppComponent>;
@@ -20,7 +13,7 @@ describe('Marble testing in RxJS', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule]
+            providers: [provideHttpClient()]
         });
 
         fixture = TestBed.createComponent(AppComponent);
@@ -32,21 +25,21 @@ describe('Marble testing in RxJS', () => {
     });
 
     it('should interval', () => {
-        const sub = app.interval();
+        const sub = app['interval']();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
 
     it('should observer error', () => {
         const subject = new Subject();
-        const sub = subject.subscribe(app.observer);
+        const sub = subject.subscribe(app['observer']);
         subject.error('Hello');
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
 
     it('should multicastInterval', () => {
-        const subs = app.multicastInterval();
+        const subs = app['multicastInterval']();
         subs.forEach((sub) => {
             sub.unsubscribe();
             expect(sub.closed).toBeTruthy();
@@ -54,7 +47,7 @@ describe('Marble testing in RxJS', () => {
     });
 
     it('should behaviorSubject', () => {
-        const subs = app.behaviorSubject();
+        const subs = app['behaviorSubject']();
         jest.runAllTimers();
         subs.forEach((sub) => {
             sub.unsubscribe();
@@ -63,14 +56,14 @@ describe('Marble testing in RxJS', () => {
     });
 
     it('should loading', () => {
-        const sub = app.loading();
+        const sub = app['loading']();
         jest.runAllTimers();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
 
     it('should loadingWithService', () => {
-        const sub = app.loadingWithService();
+        const sub = app['loadingWithService']();
         jest.runAllTimers();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
@@ -78,7 +71,7 @@ describe('Marble testing in RxJS', () => {
 
     it('should ngOnInit/loadingBehaviorSubject', () => {
         app.ngOnInit();
-        const sub = app.loadingBehaviorSubject();
+        const sub = app['loadingBehaviorSubject']();
         jest.runAllTimers();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
@@ -86,7 +79,7 @@ describe('Marble testing in RxJS', () => {
 
     it('should ngOnInit/loadingBehaviorSubject and showLoading', () => {
         app.ngOnInit();
-        const sub = app.loadingBehaviorSubject();
+        const sub = app['loadingBehaviorSubject']();
         jest.runAllTimers();
         loadingBehaviorService.showLoading();
         sub.unsubscribe();
@@ -94,33 +87,33 @@ describe('Marble testing in RxJS', () => {
     });
 
     it('should useObservableStore', () => {
-        const store = app.useObservableStore();
-        expect(store._store.value).toStrictEqual({
+        const store = app['useObservableStore']();
+        expect(store['_store'].value).toStrictEqual({
             isAuthenticated: true,
             user: 'Diaconu'
         });
     });
 
     it('should useReplaySubject', () => {
-        const sub = app.useReplaySubject();
+        const sub = app['useReplaySubject']();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
 
     it('should useShareReplay', () => {
-        const sub = app.useShareReplay();
+        const sub = app['useShareReplay']();
         jest.runAllTimers();
         expect(sub).toBeTruthy();
     });
 
     it('should useAsyncSubject', () => {
-        const sub = app.useAsyncSubject();
+        const sub = app['useAsyncSubject']();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
 
     it('should useAsyncScheduler', () => {
-        const subs = app.useAsyncScheduler();
+        const subs = app['useAsyncScheduler']();
         subs.forEach((sub) => {
             sub.unsubscribe();
             expect(sub.closed).toBeTruthy();
@@ -128,13 +121,13 @@ describe('Marble testing in RxJS', () => {
     });
 
     it('should useAsapScheduler', () => {
-        const sub = app.useAsapScheduler();
+        const sub = app['useAsapScheduler']();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
 
     it('should useAsyncSchedulerCounter', () => {
-        const subs = app.useAsyncSchedulerCounter();
+        const subs = app['useAsyncSchedulerCounter']();
         subs.forEach((sub) => {
             sub.unsubscribe();
             expect(sub.closed).toBeTruthy();
@@ -142,7 +135,7 @@ describe('Marble testing in RxJS', () => {
     });
 
     it('should useAsapSchedulerCounter', () => {
-        const subs = app.useAsapSchedulerCounter();
+        const subs = app['useAsapSchedulerCounter']();
         subs.forEach((sub) => {
             sub.unsubscribe();
             expect(sub.closed).toBeTruthy();
@@ -150,44 +143,44 @@ describe('Marble testing in RxJS', () => {
     });
 
     it('should useAnimationFrameScheduler', () => {
-        const sub = app.useAnimationFrameScheduler();
+        const sub = app['useAnimationFrameScheduler']();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
 
     it('should useQueueScheduler', () => {
-        const sub = app.useQueueScheduler();
+        const sub = app['useQueueScheduler']();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
 
     it('should toggleShow', () => {
-        app.show = false;
-        app.toggleShow();
-        expect(app.show).toBeTruthy();
+        app['show'] = false;
+        app['toggleShow']();
+        expect(app['show']).toBeTruthy();
     });
 
     it('should count', () => {
-        app.count();
+        app['count']();
         jest.runAllTimers();
-        expect(app.counter).toBe('Stopped!');
+        expect(app['counter']).toBe('Stopped!');
     });
 
     it('should countFinalize', () => {
-        app.countFinalize();
+        app['countFinalize']();
         jest.runAllTimers();
-        expect(app.counterFinalize).toBe('Stopped!');
+        expect(app['counterFinalize']).toBe('Stopped!');
     });
 
     it('should retry', () => {
-        const sub = app.retry();
+        const sub = app['retry']();
         jest.runAllTimers();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
 
     it('should autoUnsubscribe', () => {
-        const sub = app.autoUnsubscribe();
+        const sub = app['autoUnsubscribe']();
         document.dispatchEvent(new MouseEvent('click'));
         jest.runAllTimers();
         sub.unsubscribe();
@@ -195,7 +188,7 @@ describe('Marble testing in RxJS', () => {
     });
 
     it('should conditionalSubscribe', () => {
-        const subs = app.conditionalSubscribe();
+        const subs = app['conditionalSubscribe']();
         subs.forEach((sub) => {
             sub.unsubscribe();
             expect(sub.closed).toBeTruthy();
@@ -241,12 +234,8 @@ describe('Marble testing in RxJS', () => {
             const sourceOneExpectedSub = '^------!';
             const sourceTwoExpectedSub = '-------^------!';
             expectObservable(final$).toBe(expected);
-            expectSubscriptions(source$.subscriptions).toBe(
-                sourceOneExpectedSub
-            );
-            expectSubscriptions(source2$.subscriptions).toBe(
-                sourceTwoExpectedSub
-            );
+            expectSubscriptions(source$.subscriptions).toBe(sourceOneExpectedSub);
+            expectSubscriptions(source2$.subscriptions).toBe(sourceTwoExpectedSub);
         });
     });
 
@@ -295,29 +284,19 @@ describe('Marble testing in RxJS', () => {
         let errorTestScheduler = new TestScheduler(() => {});
         errorTestScheduler.run((helpers) => {
             const { expectObservable } = helpers;
-            const source$ = of(
-                { firstName: 'Noran', lastName: 'Diaconu' },
-                null
-            ).pipe(
+            const source$ = of({ firstName: 'Noran', lastName: 'Diaconu' }, null).pipe(
                 map((output) => `${output?.firstName} ${output?.lastName}`),
                 catchError(() => {
                     throw { message: 'Invalid user!' };
                 })
             );
             const expected = '(a#)';
-            expectObservable(source$).toBe(
-                expected,
-                { a: 'Noran Diaconu' },
-                { message: 'Invalid user!' }
-            );
+            expectObservable(source$).toBe(expected, { a: 'Noran Diaconu' }, { message: 'Invalid user!' });
         });
     });
 
     it('should let you test errors and error messages with subscribe', () => {
-        const source$ = of(
-            { firstName: 'Noran', lastName: 'Diaconu' },
-            null
-        ).pipe(
+        const source$ = of({ firstName: 'Noran', lastName: 'Diaconu' }, null).pipe(
             map((output) => `${output?.firstName} ${output?.lastName}`),
             catchError(() => {
                 throw { message: 'Invalid user!' };
@@ -376,9 +355,7 @@ describe('subscribe & assert testing in RxJs', () => {
     });
 
     it('should let you test async operations with done callback', (done) => {
-        const source$ = of('Ready', 'Set', 'Go!').pipe(
-            mergeMap((message) => of(message))
-        );
+        const source$ = of('Ready', 'Set', 'Go!').pipe(mergeMap((message) => of(message)));
         const expected = ['Ready', 'Set', 'Go!'];
         let index = 0;
         source$.subscribe(

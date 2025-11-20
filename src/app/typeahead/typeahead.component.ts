@@ -1,17 +1,6 @@
-import {
-    AfterViewInit,
-    Component,
-    ElementRef,
-    inject,
-    viewChild
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, viewChild } from '@angular/core';
 import { fromEvent, Observable } from 'rxjs';
-import {
-    debounceTime,
-    distinctUntilChanged,
-    pluck,
-    switchMap
-} from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, pluck, switchMap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { AsyncPipe } from '@angular/common';
 
@@ -26,16 +15,16 @@ interface Entry {
     imports: [AsyncPipe]
 })
 export class TypeaheadComponent implements AfterViewInit {
-    private http = inject(HttpClient);
+    protected rows: Observable<Entry[]>;
 
-    readonly inputBox = viewChild.required<ElementRef>('textInput');
-    rows: Observable<Entry[]>;
+    private readonly http = inject(HttpClient);
+    private readonly inputBox = viewChild.required<ElementRef>('textInput');
 
     ngAfterViewInit(): void {
         this.search();
     }
 
-    search(): Entry[] {
+    private search(): Entry[] {
         const input$ = fromEvent(this.inputBox().nativeElement, 'input');
         input$
             .pipe(
@@ -43,10 +32,7 @@ export class TypeaheadComponent implements AfterViewInit {
                 pluck('target', 'value'),
                 distinctUntilChanged(),
                 switchMap((searchTerm) => {
-                    this.rows = this.http.get<Entry[]>(
-                        'https://api.openbrewerydb.org/breweries?by_name=' +
-                            searchTerm
-                    );
+                    this.rows = this.http.get<Entry[]>('https://api.openbrewerydb.org/v1/breweries?by_name=' + searchTerm);
                     return this.rows;
                 })
             )

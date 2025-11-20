@@ -19,9 +19,7 @@ describe('ObservableStoreComponent', () => {
         store.updateState({
             user: 'Diaconu'
         });
-        store
-            .selectState('user')
-            .subscribe((user) => expect(user).toBe('Diaconu'));
+        store.selectState('user').subscribe((user) => expect(user).toBe('Diaconu'));
     });
 
     it('should complete state', () => {
@@ -30,13 +28,13 @@ describe('ObservableStoreComponent', () => {
             user: 'Noran',
             isAuthenticated: false
         });
-        expect(store._store.isStopped).toBeFalsy();
-        expect(store._stateUpdates.isStopped).toBeFalsy();
-        expect(store._stateUpdates.observers).toBeTruthy();
+        expect(store['_store'].isStopped).toBeFalsy();
+        expect(store['_stateUpdates'].isStopped).toBeFalsy();
+        expect(store['_stateUpdates'].observers).toBeTruthy();
         store.completeState();
-        expect(store._store.isStopped).toBeTruthy();
-        expect(store._stateUpdates.isStopped).toBeTruthy();
-        expect(store._stateUpdates.observers).toStrictEqual([]);
+        expect(store['_store'].isStopped).toBeTruthy();
+        expect(store['_stateUpdates'].isStopped).toBeTruthy();
+        expect(store['_stateUpdates'].observers).toStrictEqual([]);
         expect(store).toBeTruthy();
     });
 });

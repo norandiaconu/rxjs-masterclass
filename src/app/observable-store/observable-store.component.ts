@@ -10,16 +10,13 @@ interface UserState {
 @Component({
     selector: 'observable-store',
     templateUrl: './observable-store.component.html',
-    styleUrls: ['./observable-store.component.scss'],
-    standalone: false
+    styleUrls: ['./observable-store.component.scss']
 })
 export class ObservableStoreComponent {
-    _store: BehaviorSubject<UserState>;
-    _stateUpdates: Subject<UserState>;
+    private _store: BehaviorSubject<UserState>;
+    private _stateUpdates: Subject<UserState>;
 
-    constructor() {}
-
-    setup(initialState: UserState): void {
+    public setup(initialState: UserState): void {
         this._store = new BehaviorSubject(initialState);
         this._stateUpdates = new Subject();
         this._stateUpdates
@@ -31,18 +28,15 @@ export class ObservableStoreComponent {
             .subscribe(this._store);
     }
 
-    updateState(stateUpdate: any): void {
+    public updateState(stateUpdate: any): void {
         this._stateUpdates.next(stateUpdate);
     }
 
-    selectState(stateKey: any): Observable<UserState> {
-        return this._store.pipe(
-            distinctUntilKeyChanged(stateKey),
-            pluck(stateKey)
-        );
+    public selectState(stateKey: any): Observable<UserState> {
+        return this._store.pipe(distinctUntilKeyChanged(stateKey), pluck(stateKey));
     }
 
-    completeState(): void {
+    public completeState(): void {
         this._store.complete();
         this._stateUpdates.next();
         this._stateUpdates.complete();
