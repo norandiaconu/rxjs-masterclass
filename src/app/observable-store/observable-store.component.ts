@@ -13,8 +13,8 @@ interface UserState {
     styleUrls: ['./observable-store.component.scss']
 })
 export class ObservableStoreComponent {
-    private _store: BehaviorSubject<UserState>;
-    private _stateUpdates: Subject<UserState>;
+    private _store!: BehaviorSubject<UserState>;
+    private _stateUpdates!: Subject<UserState | undefined>;
 
     public setup(initialState: UserState): void {
         this._store = new BehaviorSubject(initialState);
@@ -38,7 +38,7 @@ export class ObservableStoreComponent {
 
     public completeState(): void {
         this._store.complete();
-        this._stateUpdates.next();
+        this._stateUpdates.next(undefined);
         this._stateUpdates.complete();
     }
 }

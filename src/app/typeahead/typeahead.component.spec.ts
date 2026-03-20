@@ -9,10 +9,15 @@ describe('TypeaheadComponent', () => {
     let fixture: ComponentFixture<TypeaheadComponent>;
 
     beforeEach(async () => {
+        vitest.useFakeTimers();
         await TestBed.configureTestingModule({
             imports: [TypeaheadComponent],
             providers: [provideHttpClient(), provideHttpClientTesting()]
         }).compileComponents();
+    });
+
+    afterEach(() => {
+        vitest.resetAllMocks();
     });
 
     beforeEach(() => {
@@ -32,7 +37,7 @@ describe('TypeaheadComponent', () => {
         expect(input.nativeElement.value).toBe('test');
     });
 
-    it('should test search', fakeAsync(() => {
+    it('should test search', () => {
         sendInput('test');
         const rows = component['search']();
         const empty = [
@@ -40,9 +45,9 @@ describe('TypeaheadComponent', () => {
                 name: 'No response'
             }
         ];
-        tick(200);
+        vitest.advanceTimersByTime(200);
         expect(rows).toStrictEqual(empty);
-    }));
+    });
 
     function sendInput(text: string) {
         const input = fixture.debugElement.query(By.css('#textInput'));

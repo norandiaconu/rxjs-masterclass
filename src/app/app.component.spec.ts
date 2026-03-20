@@ -9,7 +9,7 @@ import { provideHttpClient } from '@angular/common/http';
 describe('Marble testing in RxJS', () => {
     let fixture: ComponentFixture<AppComponent>;
     let app: AppComponent;
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -48,7 +48,7 @@ describe('Marble testing in RxJS', () => {
 
     it('should behaviorSubject', () => {
         const subs = app['behaviorSubject']();
-        jest.runAllTimers();
+        vi.runAllTimers();
         subs.forEach((sub) => {
             sub.unsubscribe();
             expect(sub.closed).toBeTruthy();
@@ -57,14 +57,14 @@ describe('Marble testing in RxJS', () => {
 
     it('should loading', () => {
         const sub = app['loading']();
-        jest.runAllTimers();
+        vi.runAllTimers();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
 
     it('should loadingWithService', () => {
         const sub = app['loadingWithService']();
-        jest.runAllTimers();
+        vi.runAllTimers();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
@@ -72,7 +72,7 @@ describe('Marble testing in RxJS', () => {
     it('should ngOnInit/loadingBehaviorSubject', () => {
         app.ngOnInit();
         const sub = app['loadingBehaviorSubject']();
-        jest.runAllTimers();
+        vi.runAllTimers();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
@@ -80,7 +80,7 @@ describe('Marble testing in RxJS', () => {
     it('should ngOnInit/loadingBehaviorSubject and showLoading', () => {
         app.ngOnInit();
         const sub = app['loadingBehaviorSubject']();
-        jest.runAllTimers();
+        vi.runAllTimers();
         loadingBehaviorService.showLoading();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
@@ -88,7 +88,7 @@ describe('Marble testing in RxJS', () => {
 
     it('should useObservableStore', () => {
         const store = app['useObservableStore']();
-        expect(store['_store'].value).toStrictEqual({
+        expect(store['_store']?.value).toStrictEqual({
             isAuthenticated: true,
             user: 'Diaconu'
         });
@@ -102,7 +102,7 @@ describe('Marble testing in RxJS', () => {
 
     it('should useShareReplay', () => {
         const sub = app['useShareReplay']();
-        jest.runAllTimers();
+        vi.runAllTimers();
         expect(sub).toBeTruthy();
     });
 
@@ -162,19 +162,19 @@ describe('Marble testing in RxJS', () => {
 
     it('should count', () => {
         app['count']();
-        jest.runAllTimers();
+        vi.runAllTimers();
         expect(app['counter']).toBe('Stopped!');
     });
 
     it('should countFinalize', () => {
         app['countFinalize']();
-        jest.runAllTimers();
+        vi.runAllTimers();
         expect(app['counterFinalize']).toBe('Stopped!');
     });
 
     it('should retry', () => {
         const sub = app['retry']();
-        jest.runAllTimers();
+        vi.runAllTimers();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
@@ -182,7 +182,7 @@ describe('Marble testing in RxJS', () => {
     it('should autoUnsubscribe', () => {
         const sub = app['autoUnsubscribe']();
         document.dispatchEvent(new MouseEvent('click'));
-        jest.runAllTimers();
+        vi.runAllTimers();
         sub.unsubscribe();
         expect(sub.closed).toBeTruthy();
     });
@@ -354,17 +354,13 @@ describe('subscribe & assert testing in RxJs', () => {
         });
     });
 
-    it('should let you test async operations with done callback', (done) => {
+    it('should let you test async operations with done callback', () => {
         const source$ = of('Ready', 'Set', 'Go!').pipe(mergeMap((message) => of(message)));
         const expected = ['Ready', 'Set', 'Go!'];
         let index = 0;
-        source$.subscribe(
-            (val) => {
-                expect(val).toEqual(expected[index]);
-                index++;
-            },
-            null,
-            done
-        );
+        source$.subscribe((val) => {
+            expect(val).toEqual(expected[index]);
+            index++;
+        });
     });
 });

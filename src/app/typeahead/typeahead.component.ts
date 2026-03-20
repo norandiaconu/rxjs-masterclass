@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, inject, viewChild } from '@angular/core';
 import { fromEvent, Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged, pluck, switchMap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, pluck, switchMap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { AsyncPipe } from '@angular/common';
 
@@ -15,7 +15,7 @@ interface Entry {
     imports: [AsyncPipe]
 })
 export class TypeaheadComponent implements AfterViewInit {
-    protected rows: Observable<Entry[]>;
+    protected rows!: Observable<Entry[]>;
 
     private readonly http = inject(HttpClient);
     private readonly inputBox = viewChild.required<ElementRef>('textInput');
@@ -31,6 +31,7 @@ export class TypeaheadComponent implements AfterViewInit {
                 debounceTime(200),
                 pluck('target', 'value'),
                 distinctUntilChanged(),
+                filter((val) => (val as string).length > 2),
                 switchMap((searchTerm) => {
                     this.rows = this.http.get<Entry[]>('https://api.openbrewerydb.org/v1/breweries?by_name=' + searchTerm);
                     return this.rows;

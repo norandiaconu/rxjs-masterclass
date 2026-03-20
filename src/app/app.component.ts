@@ -412,7 +412,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 console.log(v);
             });
         setTimeout(() => {
-            onDestroy$.next();
+            onDestroy$.next(undefined);
             onDestroy$.complete();
         }, 2000);
         return onDestroy$;
@@ -464,7 +464,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.unsubscribe$.next();
+        this.unsubscribe$.next(undefined);
         this.unsubscribe$.complete();
     }
 }
