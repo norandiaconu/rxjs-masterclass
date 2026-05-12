@@ -1,15 +1,16 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { TypeaheadComponent } from './typeahead.component';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { By } from '@angular/platform-browser';
 import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { describe, beforeEach, afterEach, it, expect, vi } from 'vitest';
+import { TypeaheadComponent } from './typeahead.component';
 
 describe('TypeaheadComponent', () => {
     let component: TypeaheadComponent;
     let fixture: ComponentFixture<TypeaheadComponent>;
 
     beforeEach(async () => {
-        vitest.useFakeTimers();
+        vi.useFakeTimers();
         await TestBed.configureTestingModule({
             imports: [TypeaheadComponent],
             providers: [provideHttpClient(), provideHttpClientTesting()]
@@ -17,7 +18,7 @@ describe('TypeaheadComponent', () => {
     });
 
     afterEach(() => {
-        vitest.resetAllMocks();
+        vi.resetAllMocks();
     });
 
     beforeEach(() => {
@@ -45,7 +46,7 @@ describe('TypeaheadComponent', () => {
                 name: 'No response'
             }
         ];
-        vitest.advanceTimersByTime(200);
+        vi.advanceTimersByTime(200);
         expect(rows).toStrictEqual(empty);
     });
 

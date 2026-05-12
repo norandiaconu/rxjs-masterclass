@@ -1,10 +1,11 @@
+import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { concat, from, interval, of, Subject } from 'rxjs';
 import { catchError, delay, map, mergeMap, take, toArray } from 'rxjs/operators';
 import { TestScheduler } from 'rxjs/testing';
+import { describe, beforeEach, it, expect, vi } from 'vitest';
 import { AppComponent } from './app.component';
 import { loadingBehaviorService } from './loading.service';
-import { provideHttpClient } from '@angular/common/http';
 
 describe('Marble testing in RxJS', () => {
     let fixture: ComponentFixture<AppComponent>;
