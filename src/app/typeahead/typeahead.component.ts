@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, inject, viewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, inject, viewChild } from '@angular/core';
 import { fromEvent, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, pluck, switchMap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
@@ -18,6 +18,7 @@ export class TypeaheadComponent implements AfterViewInit {
     protected rows!: Observable<Entry[]>;
 
     private readonly http = inject(HttpClient);
+    private readonly cdRef = inject(ChangeDetectorRef);
     private readonly inputBox = viewChild.required<ElementRef>('textInput');
 
     ngAfterViewInit(): void {
@@ -34,6 +35,7 @@ export class TypeaheadComponent implements AfterViewInit {
                 filter((val) => (val as string).length > 2),
                 switchMap((searchTerm) => {
                     this.rows = this.http.get<Entry[]>('https://api.openbrewerydb.org/v1/breweries?by_name=' + searchTerm);
+                    this.cdRef.markForCheck();
                     return this.rows;
                 })
             )

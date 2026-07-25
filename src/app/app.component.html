@@ -57,18 +57,18 @@
         <div class="card-container">
             <a class="card card__scheduler" (click)="useAsyncScheduler()">useAsyncScheduler</a>
             <a class="card card__scheduler" (click)="useAsapScheduler()">useAsapScheduler</a>
-            <a class="card card__scheduler" (click)="useAsyncSchedulerCounter()">asyncCounter: {{ asyncCounter }}</a>
-            <a class="card card__scheduler" (click)="useAsapSchedulerCounter()">asapCounter: {{ asapCounter }}</a>
+            <a class="card card__scheduler" (click)="useAsyncSchedulerCounter()">asyncCounter: {{ asyncCounter() }}</a>
+            <a class="card card__scheduler" (click)="useAsapSchedulerCounter()">asapCounter: {{ asapCounter() }}</a>
             <a class="card card__scheduler" (click)="useAnimationFrameScheduler()">
                 <div>useAnimationFrameScheduler</div>
-                <div id="ball" [ngStyle]="{ transform: 'translateX(' + position + 'px)' }"></div>
+                <div id="ball" [ngStyle]="{ transform: 'translateX(' + position() + 'px)' }"></div>
             </a>
             <a class="card card__scheduler" (click)="useQueueScheduler()">useQueueScheduler</a>
         </div>
         <h2>Tips & Tricks</h2>
         <div class="card-container">
-            <a class="card" (click)="count()">count: {{ counter }}</a>
-            <a class="card" (click)="countFinalize()">countFinalize: {{ counterFinalize }}</a>
+            <a class="card" (click)="count()">count: {{ counter() }}</a>
+            <a class="card" (click)="countFinalize()">countFinalize: {{ counterFinalize() }}</a>
             <a class="card" (click)="retry()">retry</a>
             <div>
                 <a class="card" (click)="combinationOperators()">combinationOperators</a>

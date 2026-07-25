@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
     animationFrameScheduler,
@@ -73,12 +73,12 @@ export function customRetry({ excludedStatusCodes = [], retryAttempts = 3, scali
     imports: [NgStyle, TypeaheadComponent]
 })
 export class AppComponent implements OnInit, OnDestroy {
-    protected asapCounter = 0;
-    protected asyncCounter = 0;
-    protected position = -270;
+    protected asapCounter = signal<number>(0);
+    protected asyncCounter = signal<number>(0);
+    protected position = signal<number>(-270);
     protected show = true;
-    protected counter = '';
-    protected counterFinalize = '';
+    protected counter = signal<string>('');
+    protected counterFinalize = signal<string>('');
     protected disableRadioButtons = true;
 
     private readonly httpClient = inject(HttpClient);
@@ -271,7 +271,7 @@ export class AppComponent implements OnInit, OnDestroy {
     protected useAsyncSchedulerCounter(): Subscription[] {
         const sub1 = range(1, 5, asapScheduler).subscribe(this.observer);
         const sub2 = range(1, 500, asyncScheduler)
-            .pipe(tap((val) => (this.asyncCounter = val)))
+            .pipe(tap((val) => this.asyncCounter.set(val)))
             .subscribe();
         console.log('sync');
         return [sub1, sub2];
@@ -281,7 +281,7 @@ export class AppComponent implements OnInit, OnDestroy {
     protected useAsapSchedulerCounter(): Subscription[] {
         const sub1 = range(1, 5, asapScheduler).subscribe(this.observer);
         const sub2 = range(1, 1000000, asapScheduler)
-            .pipe(tap((val) => (this.asapCounter = val)))
+            .pipe(tap((val) => this.asapCounter.set(val)))
             .subscribe();
         console.log('sync');
         return [sub1, sub2];
@@ -292,7 +292,7 @@ export class AppComponent implements OnInit, OnDestroy {
         return interval(0, animationFrameScheduler)
             .pipe(
                 takeWhile((val) => val <= 350),
-                tap((val) => (this.position = val - 270))
+                tap((val) => this.position.set(val - 270))
             )
             .subscribe();
     }
@@ -315,29 +315,29 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     protected count(): void {
-        this.counter = '';
+        this.counter.set('');
         const sub = interval(1000)
             .pipe(take(3))
             .subscribe({
                 next: (val) => {
-                    this.counter = val.toString();
+                    this.counter.set(val.toString());
                 },
                 complete: () => {
-                    this.counter = 'Stopped!';
+                    this.counter.set('Stopped!');
                 }
             });
     }
 
     protected countFinalize(): void {
-        this.counterFinalize = '';
+        this.counterFinalize.set('');
         const sub = interval(1000)
             .pipe(
                 finalize(() => {
-                    this.counterFinalize = 'Stopped!';
+                    this.counterFinalize.set('Stopped!');
                 })
             )
             .subscribe((val) => {
-                this.counterFinalize = val.toString();
+                this.counterFinalize.set(val.toString());
             });
         setTimeout(() => {
             sub.unsubscribe();
