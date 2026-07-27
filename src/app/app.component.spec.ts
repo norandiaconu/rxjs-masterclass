@@ -164,13 +164,13 @@ describe('Marble testing in RxJS', () => {
     it('should count', () => {
         app['count']();
         vi.runAllTimers();
-        expect(app['counter']).toBe('Stopped!');
+        expect(app['counter']()).toBe('Stopped!');
     });
 
     it('should countFinalize', () => {
         app['countFinalize']();
         vi.runAllTimers();
-        expect(app['counterFinalize']).toBe('Stopped!');
+        expect(app['counterFinalize']()).toBe('Stopped!');
     });
 
     it('should retry', () => {
